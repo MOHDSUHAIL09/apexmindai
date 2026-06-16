@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import './invest.css';
+// import './invest.css';
 
 const InvestFund = () => {
   // 🔥 Dono bots ke liye alag states
