@@ -1,0 +1,257 @@
+/* ===== MAIN TITLE ===== */
+.main-title {
+  text-align: center;
+  color: #2c3e50;
+  font-size: 2.8rem;
+  font-weight: 800;
+  margin: 30px 0 40px 0;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.08);
+  letter-spacing: -0.5px;
+}
+
+/* ===== CARD CONTAINER ===== */
+.card-container {
+  align-items: center;
+  gap: 50px;
+  padding: 20px 30px 50px;
+  flex-wrap: wrap;
+   background: linear-gradient(145deg, #f6f9fc 0%, #e9edf5 100%);
+}
+@media (max-width: 768px) {
+  .card-container{
+    padding: 0px;
+  }
+}
+
+/* ===== INVEST CARD ===== */
+.invest-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12), 0 8px 20px rgba(0, 0, 0, 0.05);
+  width: 550px;
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(2px);
+}
+
+.invest-card:hover {
+  transform: translateY(-12px) scale(1.01);
+  box-shadow: 0 30px 60px rgba(102, 126, 234, 0.25), 0 12px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== CARD HEADER ===== */
+.card-header {
+  padding: 10px !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bot-name {
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.badge {
+  padding: 6px 16px;
+  border-radius: 30px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.bg-success {
+  background: #27ae60;
+  color: white;
+}
+
+.bg-warning {
+  background: #f39c12;
+  color: white;
+}
+
+/* ===== IMAGE SECTION ===== */
+.image-wrapper {
+  padding: 30px 30px 15px 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fafbfd;
+}
+
+.bot-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 5px solid #667eea;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.bot-image:hover {
+  transform: scale(1.06) rotate(-2deg);
+  box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5);
+}
+
+/* ===== CARD BODY ===== */
+.card-body {
+  padding: 20px 25px 30px 25px;
+}
+
+/* ===== INPUT GROUP ===== */
+.input-group02 {
+  display: flex;
+  align-items: center;
+  background: #f4f6fa;
+  border-radius: 14px;
+  border: 2px solid #e2e8f0;
+  overflow: hidden;
+  margin-bottom: 18px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-group02:focus-within {
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+}
+
+.currency-icon {
+  padding: 12px 18px;
+  background: #667eea;
+  color: white;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.amount-input {
+  flex: 1;
+  padding: 14px 18px;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  background: transparent;
+  color: #1a202c;
+  font-weight: 500;
+}
+
+.amount-input::placeholder {
+  color: #a0aec0;
+  font-weight: 400;
+}
+
+/* ===== NOTE & LIMIT ===== */
+.note-section {
+  background: #f0f7ff;
+  padding: 14px 18px;
+  border-radius: 12px;
+  margin: 16px 0;
+  border-left: 5px solid #236205;
+  gap: 10px;
+}
+
+.note-label {
+  font-weight: 700;
+  color: #034e10;
+  display: block;
+  
+}
+
+.note-section p {
+  color: #4a5568;
+  font-size: 0.80rem;
+  margin-top: 3px;
+}
+
+.limit-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  background: #fffbeb;
+  border-radius: 14px;
+  margin: 16px 0 20px 0;
+  border: 1px solid #f6e05e;
+}
+
+.limit-label {
+  font-weight: 700;
+  color: #744210;
+}
+
+.limit-text {
+  color: #744210;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* ============================================================
+   🚀 INVEST BUTTON – ULTRA STYLISH
+   ============================================================ */
+.invest-btn {
+  width: 100%;
+  padding: 16px 20px;
+  background:  #667eea;
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  margin-top: 6px;
+}
+
+
+
+
+
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .invest-card {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .main-title {
+    font-size: 2.2rem;
+  }
+
+  .bot-image {
+    width: 120px;
+    height: 120px;
+  }
+
+  .invest-btn {
+    font-size: 1rem;
+    padding: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .invest-card {
+    border-radius: 20px;
+  }
+
+  .card-body {
+    padding: 15px 18px 22px;
+  }
+
+  .invest-btn {
+    font-size: 0.95rem;
+    padding: 12px;
+    border-radius: 12px;
+  }
+}
