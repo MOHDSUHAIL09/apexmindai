@@ -1,6 +1,7 @@
-import * as QRCode from 'qrcode.react';
+
 import { useEffect, useState } from 'react';
-import { FaArrowTurnDown, FaMintbit, FaWallet, FaCreditCard } from "react-icons/fa6";
+import { FaArrowTurnDown, FaMintbit,  FaCreditCard } from "react-icons/fa6";
+import { FaHistory } from "react-icons/fa";
 import { ImSortAmountDesc } from "react-icons/im";
 import { GiProfit } from "react-icons/gi";
 import { IoSend } from 'react-icons/io5';
@@ -64,9 +65,9 @@ const Dashboard = () => {
     const [minimumWithdraw] = useState(20);
 
 
-    const [showdepositModal, setShowdepositModal] = useState(false);
-    const [investAmount, setInvestAmount] = useState('');
-    const [investLoading, setInvestLoading] = useState(false);
+    // const [showdepositModal, setShowdepositModal] = useState(false);
+    // const [investAmount, setInvestAmount] = useState('');
+    // const [investLoading, setInvestLoading] = useState(false);
 
   const [showSelfPayoutModal, setShowSelfPayoutModal] = useState(false);
   const [selfPayoutAmount, setSelfPayoutAmount] = useState('');
@@ -535,16 +536,17 @@ const handleSelfTradingPayout = async () => {
      Payout
 </button>
                                 </div>
-                                <Link to="Deposit-History" className="text-decoration-none">
+                               <Link to="Deposit-History" className="text-decoration-none">
                                     <h3 className="bold-text mb-1 hover">
-                                        <span style={{ color: "green" }}> ${userData?.Depositfund?.toLocaleString() || "0.00"}</span>
+                                        <span style={{ color: "green" }}> ${userData?.SelfTrade?.toLocaleString() || "0.00"}</span>
                                     </h3>
                                 </Link>
                                 <div className='d-flex justify-content-between'>
-                                    <div className='fw-bold'>Deposit Fund</div>
-                                    <div className="#" onClick={() => setShowdepositModal(true)} style={{ cursor: 'pointer' }}>
-                                        <FaWallet style={{ fontSize: "33px", color: "green", marginTop: "-35px " }} />
+                                    <div className='fw-bold'>Self Trade</div>
+                                    <Link to="SelfTradingHistory"><div className="#" >
+                                        <FaHistory style={{ fontSize: "24px", color: "#2153c9", marginTop: "-20px" }}/>
                                     </div>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
@@ -1015,7 +1017,7 @@ const handleSelfTradingPayout = async () => {
 
 
             {/* DepositT MODAL - Wallet Icon Click Par Khulega */}
-            {showdepositModal && (
+            {/* {showdepositModal && (
 
                 <div className="modal-overlay" onClick={() => setShowdepositModal(false)}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -1100,7 +1102,7 @@ const handleSelfTradingPayout = async () => {
                                     </span>
                                 </div>
                             </div>
-                            {/* ✅ SHARE & COPY BUTTONS */}
+                  
                             <div className='d-flex gap-3 justify-content-center mt-3'>
                                 <button
                                     className="btn btn-success px-4 py-2"
@@ -1138,7 +1140,7 @@ const handleSelfTradingPayout = async () => {
                         </div>
                     </div>
                 </div>
-            )}
+            )} */}
 
             {/* Withdraw Modal */}
             {showWithdrawModal && (

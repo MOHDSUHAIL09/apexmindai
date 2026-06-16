@@ -15,6 +15,7 @@ import {
   IconGitCompare,
   IconPower
 } from '@tabler/icons-react';
+import { FaWallet } from "react-icons/fa";
 import dashboardlogo from '../../assets/images/logo/dashboardlogo.png'
 
 const Sidebar = ({ sidebarCollapsed, mobileSidebarOpen, closeMobileSidebar }) => {
@@ -114,6 +115,17 @@ const Sidebar = ({ sidebarCollapsed, mobileSidebarOpen, closeMobileSidebar }) =>
               </Link>
             </li>
 
+                        <li className="sidebar-item">
+              <Link 
+                className={`sidebar-link ${isActive('/Subscription') ? 'active' : ''}`} 
+                to="/dashboard/DepositFund" 
+                onClick={handleLinkClick}
+              >
+                <span style={{fontSize: "20px"}}><FaWallet stroke={2} /></span>
+                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Deposit Fund</span>}
+              </Link>
+            </li>
+
             <li className="sidebar-item">
               <Link 
                 className={`sidebar-link ${isActive('/InvestFund') ? 'active' : ''}`} 
@@ -170,8 +182,8 @@ const Sidebar = ({ sidebarCollapsed, mobileSidebarOpen, closeMobileSidebar }) =>
             </li> */}
                         <li className="sidebar-item">
               <Link 
-                className={`sidebar-link ${isActive('/CompoundingHistory') ? 'active' : ''}`} 
-                to="/dashboard/CompoundingHistory"
+                className={`sidebar-link ${isActive('/SelfTradingHistory') ? 'active' : ''}`} 
+                to="/dashboard/SelfTradingHistory"
                 onClick={handleLinkClick}
               >
                 <span><IconHistory stroke={2} /></span>
@@ -193,8 +205,8 @@ const Sidebar = ({ sidebarCollapsed, mobileSidebarOpen, closeMobileSidebar }) =>
 
              <li className="sidebar-item">
               <Link 
-                className={`sidebar-link ${isActive('/InvestmentHistory') ? 'active' : ''}`} 
-                to="/dashboard/InvestmentHistory"
+                className={`sidebar-link ${isActive('/DepositHistory') ? 'active' : ''}`} 
+                to="/dashboard/DepositHistory"
                 onClick={handleLinkClick}
               >
                 <span><IconHistory stroke={2} /></span>

@@ -23,10 +23,10 @@ import SocalMediaTaskHistory from '../Pages/dashboard/SocalMediaTask/SocalMediaT
 import PayOutHistory from '../Pages/dashboard/PayOutHistory';
 import '../assets/Main.css'
 import FundtransferHistory from '../Pages/dashboard/FundtransferHistory';
-import CompoundingHistory from '../Pages/dashboard/CompoundingHistory';
 import IncomeReport from '../Pages/dashboard/IncomeReport';
-import SeftradingHistory from '../Pages/dashboard/selftrading/SeftradingHistory';
 import BotTreading from '../Pages/dashboard/BotTreading';
+import DepositFund from '../Pages/dashboard/DepositFund';
+import SelfTradingHistory from '../Pages/dashboard/SelfTradingHistory';
 
 function DashboardLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -72,13 +72,14 @@ function DashboardLayout() {
             <Route path="SocalMediaTask" element={<SocalMediaTask/>} />
             <Route path="SocalMediaTaskHistory" element={<SocalMediaTaskHistory/>} />
             <Route path="InvestFund" element={<InvestFund/>} />
+            <Route path="DepositFund" element={<DepositFund/>} />
             <Route path="IncomePayout" element={<IncomePayout/>} />
             <Route path="PayOutHistory" element={<PayOutHistory/>} />
             <Route path="Fundtransfer" element={<Fundtransfer />} />
             <Route path="FundtransferHistory" element={<FundtransferHistory/>} />
-            <Route path="CompoundingHistory" element={<CompoundingHistory/>} />
+            <Route path="DashboardLayout" element={<DashboardLayout/>} />
             <Route path="IncomeReport" element={<IncomeReport/>} />
-            <Route path="SeftradingHistory" element={<SeftradingHistory/>} />
+            <Route path="SelfTradingHistory" element={<SelfTradingHistory/>} />
             <Route path="AccStatement" element={<AccStatement/>} />
             <Route path="Deposit-History" element={<DepositHistory/>} />
             <Route path="InvestmentHistory" element={<InvestmentHistory />} />

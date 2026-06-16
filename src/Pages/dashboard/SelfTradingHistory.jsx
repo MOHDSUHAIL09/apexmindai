@@ -4,7 +4,7 @@ import Pagination from "../../Componenets/ui/pagination/Pagination";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const CompoundFundReport = () => {
+const SelfTradingHistory = () => {
     const [records, setRecords] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
@@ -223,4 +223,4 @@ const CompoundFundReport = () => {
     );
 };
 
-export default CompoundFundReport;
+export default SelfTradingHistory;
