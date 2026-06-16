@@ -156,7 +156,7 @@ const LandingPage = () => {
 
 
       {/* Header */}
-      <header className={`z-10 py-4 xxl:py-6 border-b border-neutral4/15 fixed top-0 left-0 right-0 w-full transition-all duration-300 ${scrolled ? 'bg-accent2' : ''}`}>
+      <header className={`d-flex z-10 py-2 xxl:py-6 border-b border-neutral4/15 fixed top-0 left-0 right-0 w-full transition-all duration-300 ${scrolled ? 'bg-accent2' : ''}`}>
         <div className="container flex justify-between items-center header-main">
           <a href="#" onClick={(e) => { e.preventDefault(); scrollToSection('home'); }}>
             <img src={logoApex} className="max-sm:w-28" width="130" alt="Site logo icon" />

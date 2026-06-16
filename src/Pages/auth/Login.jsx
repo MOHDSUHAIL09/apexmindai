@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useUser } from "../../context/UserContext";
+import apiClient from "../../api/apiClient";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -35,20 +36,18 @@ const Login = () => {
     console.log("📤 Login payload:", payload);
     
     try {
-      const response = await fetch("http://api.apexmindai.in/api/Auth/Login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-        },
-        body: JSON.stringify(payload)
-      });
+      const response = await apiClient.post("/Auth/Login", payload, {
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      }
+    });
       
-      const data = await response.json();
-      console.log("📥 API Response:", data);
-      
-      if (data.result === "true" && data.response) {
-        const userData = data.response;
+        const data = response.data;
+    console.log("📥 API Response:", data);
+    
+    if (data.result === "true" && data.response) {
+      const userData = data.response;
         
         // 🔥 CRITICAL: Save regno to localStorage
         const regno = userData.regNo || userData.regno || userData.Regno;

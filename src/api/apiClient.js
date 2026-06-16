@@ -2,10 +2,11 @@ import axios from "axios";
 import toast from "react-hot-toast"; // Add this import
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-  maxBodyLength: Infinity,
-  headers: { 
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://api.apexmindai.in',
+  timeout: 30000,
+  headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
 });
 
