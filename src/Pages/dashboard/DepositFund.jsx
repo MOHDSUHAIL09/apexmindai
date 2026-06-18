@@ -1,22 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
+import apiClient from '../../api/apiClient';
 
 const DepositFund = () => {
     const [walletAddress, setWalletAddress] = useState(null);
     const [loading, setLoading] = useState(true);
     const [copySuccess, setCopySuccess] = useState('');
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchAddress = () => {
+        const fetchAddress = async () => {
             try {
-                console.log("🔍 Searching for wallet address in localStorage...");
+                console.log("🔍 Searching for wallet address...");
+                setLoading(true);
+                setError(null);
                 
-                // ✅ Check userData se address
+                // ✅ METHOD 1: Check localStorage userData
                 const userData = localStorage.getItem('userData');
                 if (userData) {
                     const parsed = JSON.parse(userData);
-                    const userAddress = parsed?.address || parsed?.Address || parsed?.walletAddress;
+                    const userAddress = parsed?.walletid || parsed?.walletId || parsed?.address || parsed?.walletAddress;
                     if (userAddress && userAddress !== 'null' && userAddress !== null && userAddress !== '') {
                         setWalletAddress(userAddress);
                         console.log("✅ Address found in userData:", userAddress);
@@ -25,21 +29,57 @@ const DepositFund = () => {
                     }
                 }
 
-                // ✅ Check user se address
-                const user = localStorage.getItem('user');
-                if (user) {
-                    const parsed = JSON.parse(user);
-                    const userAddress = parsed?.address || parsed?.Address || parsed?.walletAddress;
-                    if (userAddress && userAddress !== 'null' && userAddress !== null && userAddress !== '') {
-                        setWalletAddress(userAddress);
-                        console.log("✅ Address found in user:", userAddress);
-                        setLoading(false);
-                        return;
+                // ✅ METHOD 2: Direct API call for walletid
+                const regno = localStorage.getItem('regno') || localStorage.getItem('Regno');
+                console.log("📡 Regno:", regno);
+                
+                if (regno) {
+                    console.log("📡 Fetching walletid from API...");
+                    const response = await apiClient.get(`/Dashboard/Dashboard/${regno}`);
+                    console.log("📥 Full API Response:", response.data);
+                    
+                    if (response.data?.result === "true" && response.data?.response) {
+                        const apiData = response.data.response;
+                        console.log("📦 API Data:", apiData);
+                        
+                        // Check multiple possible field names
+                        const walletId = apiData?.walletid || 
+                                        apiData?.walletId || 
+                                        apiData?.address || 
+                                        apiData?.walletAddress;
+                        
+                        console.log("💰 Found walletId:", walletId);
+                        
+                        if (walletId && walletId !== 'null' && walletId !== null && walletId !== '') {
+                            setWalletAddress(walletId);
+                            console.log("✅ Address found in API response:", walletId);
+                            
+                            // Save to localStorage for future use
+                            try {
+                                const updatedUserData = JSON.parse(localStorage.getItem('userData') || '{}');
+                                updatedUserData.walletid = walletId;
+                                localStorage.setItem('userData', JSON.stringify(updatedUserData));
+                                console.log("💾 Saved walletid to localStorage");
+                            } catch (e) {
+                                console.warn("Could not save to localStorage:", e);
+                            }
+                            
+                            setLoading(false);
+                            return;
+                        } else {
+                            console.warn("⚠️ No walletid in API response");
+                        }
+                    } else {
+                        console.warn("⚠️ API response not successful");
                     }
+                } else {
+                    console.warn("⚠️ No regno found in localStorage");
                 }
 
-                // ✅ Direct localStorage check
-                const address = localStorage.getItem('walletAddress') || 
+                // ✅ METHOD 3: Check direct localStorage keys
+                const address = localStorage.getItem('walletid') ||
+                               localStorage.getItem('walletId') ||
+                               localStorage.getItem('walletAddress') || 
                                localStorage.getItem('WalletAddress') ||
                                localStorage.getItem('address') ||
                                localStorage.getItem('Address');
@@ -52,12 +92,14 @@ const DepositFund = () => {
                 }
 
                 // ❌ Address not found
-                console.warn("❌ No wallet address found in localStorage");
+                console.warn("❌ No wallet address found anywhere");
                 setWalletAddress(null);
+                setError("Wallet address not found. Please contact support.");
                 setLoading(false);
 
             } catch (error) {
                 console.error("❌ Error getting wallet address:", error);
+                setError(error.message || "Failed to fetch wallet address");
                 setWalletAddress(null);
                 setLoading(false);
             }
@@ -112,6 +154,14 @@ const DepositFund = () => {
         if (!address) return '';
         if (address.length <= 20) return address;
         return `${address.slice(0, 10)}...${address.slice(-8)}`;
+    };
+
+    const handleRetry = () => {
+        setLoading(true);
+        setError(null);
+        setTimeout(() => {
+            window.location.reload();
+        }, 500);
     };
 
     return (
@@ -191,32 +241,19 @@ const DepositFund = () => {
                                 }}>
                                     Wallet Address Not Found
                                 </p>
-                                <p style={{
-                                    color: '#6c757d',
-                                    fontSize: '13px',
-                                    textAlign: 'center',
-                                    maxWidth: '300px'
-                                }}>
-                                    Please contact support to set up your wallet address
-                                </p>
+                                {error && (
+                                    <p style={{
+                                        color: '#6c757d',
+                                        fontSize: '13px',
+                                        textAlign: 'center',
+                                        maxWidth: '300px'
+                                    }}>
+                                        {error}
+                                    </p>
+                                )}
                                 <button 
                                     className="btn btn-primary mt-2"
-                                    onClick={() => {
-                                        setLoading(true);
-                                        setTimeout(() => {
-                                            // Retry fetch
-                                            const userData = localStorage.getItem('userData');
-                                            if (userData) {
-                                                const parsed = JSON.parse(userData);
-                                                const addr = parsed?.address;
-                                                if (addr && addr !== 'null') {
-                                                    setWalletAddress(addr);
-                                                    console.log("✅ Address found on retry:", addr);
-                                                }
-                                            }
-                                            setLoading(false);
-                                        }, 1000);
-                                    }}
+                                    onClick={handleRetry}
                                 >
                                     🔄 Retry
                                 </button>

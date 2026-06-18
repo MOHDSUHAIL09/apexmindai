@@ -9,7 +9,7 @@ import { Group } from "@visx/group";
 import { curveMonotoneX } from "@visx/curve";
 import apiClient from '../../api/apiClient';
 import { useUser } from '../../context/UserContext';
-
+import { Link } from 'react-router-dom';
 
 const BotTreading = () => {
     // -------------------- BOT STATE --------------------
@@ -18,11 +18,14 @@ const BotTreading = () => {
         progress: 0,
     });
     const [selectedCurrency, setSelectedCurrency] = useState('USD');
-    const [ setBalance] = useState(12500.75);
+    const [setBalance] = useState(12500.75);
     const [setHistory] = useState([]);
     const [isRoundActive, setIsRoundActive] = useState(false);
-    const [selectedSlot, setSelectedSlot] = useState(null);
+    const [selectedSlot, setSelectedSlot] = useState(12);
     const { userData } = useUser();
+    const [timeLeft, setTimeLeft] = useState(0);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+     const [countdown, setCountdown] = useState(" ");
 
     // ✅ API Status State
     const [apiBotStatus, setApiBotStatus] = useState(null);
@@ -33,6 +36,15 @@ const BotTreading = () => {
     // ✅ Dropdown State
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef(null);
+
+    // ✅ Timer Effect
+    useEffect(() => {
+        const seconds = parseInt(userData?.status, 10);
+        console.log("status =", userData?.status);
+        if (!isNaN(seconds)) {
+            setTimeLeft(seconds);
+        }
+    }, [userData?.status]);
 
     // Close dropdown on outside click
     useEffect(() => {
@@ -45,6 +57,34 @@ const BotTreading = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+useEffect(() => {
+  if (!userData?.status) return;
+
+  // "2026-06-19 05:00:56" -> "2026-06-19T05:00:56+04:00"
+  const targetTime = new Date(
+    userData.status.replace(" ", "T") + "+04:00"
+  ).getTime();
+
+  const timer = setInterval(() => {
+    const diff = targetTime - Date.now();
+
+    if (diff <= 0) {
+      setCountdown("00H : 00M : 00S");
+      clearInterval(timer);
+      return;
+    }
+
+    const hours = Math.floor(diff / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+
+    setCountdown(
+      `${String(hours).padStart(2, "0")}H : ${String(minutes).padStart(2, "0")}M : ${String(seconds).padStart(2, "0")}S`
+    );
+  }, 1000);
+
+  return () => clearInterval(timer);
+}, [userData?.status]);
     // -------------------- FETCH BOT STATUS --------------------
     const fetchBotStatus = async () => {
         try {
@@ -55,7 +95,13 @@ const BotTreading = () => {
             if (response.data?.result === "true") {
                 const status = response.data?.response?.status;
                 setApiBotStatus(status);
-                console.log("✅ Bot Status:", status === 0 ? "Blocked" : "Active");
+                console.log("✅ Bot Status:", status === 0 ? "Running" : "Stopped");
+                
+                if (status === 0) {
+                    setBotStatus(prev => ({ ...prev, isRunning: true }));
+                } else {
+                    setBotStatus(prev => ({ ...prev, isRunning: false }));
+                }
             } else {
                 setApiBotStatus(1);
             }
@@ -97,14 +143,6 @@ const BotTreading = () => {
     const GAME_DURATION_SEC = 30;
     const POINTS_IN_ROUND = Math.ceil((GAME_DURATION_SEC * 1000) / INTERVAL_MS);
 
-    // -------------------- APEX CHART STATE --------------------
-    const [apexData, setApexData] = useState({
-        series: [{
-            name: 'Trading Revenue',
-            data: [10, 25, 15, 30, 45, 60, 55, 70, 85, 90, 95, 110]
-        }]
-    });
-
     // Currency symbols
     const getCurrencySymbol = () => {
         switch (selectedCurrency) {
@@ -116,15 +154,88 @@ const BotTreading = () => {
         }
     };
 
-
+    // ✅ Handle Slot Select
     const handleSlotSelect = (slot) => {
-        if (isBotDisabled) {
-            toast.error('Bot is currently blocked!');
-            return;
-        }
         setSelectedSlot(slot);
         setShowDropdown(false);
         toast.info(`⏱️ ${slot} Hours selected!`);
+    };
+
+    // ✅ Handle Start Bot - API Call
+    const handleStartBot = async () => {
+        // ✅ Status 0 = Running, 1 = Stopped
+        if (apiBotStatus === 0) {
+            toast.warning('⚠️ Bot is already running!');
+            return;
+        }
+        
+        if (!selectedSlot) {
+            toast.warning('⚠️ Please select a slot first!');
+            return;
+        }
+
+        if (botStatus.isRunning) {
+            toast.warning('⚠️ Bot is already running!');
+            return;
+        }
+
+        // ✅ Get betAmount from userData
+        const betAmount = parseFloat(userData?.Invest) || 100;
+        
+        // ✅ Currency mapping
+        const currencyMap = {
+            'USD': 'usdt',
+            'EUR': 'eur',
+            'GBP': 'gbp',
+            'INR': 'inr'
+        };
+        const currency = currencyMap[selectedCurrency] || 'usdt';
+        
+        // ✅ Currency Rate (default 96 for USDT)
+        const currencyRate = 96;
+
+        // ✅ Prepare payload
+        const payload = {
+            regno: parseInt(regno),
+            betAmount: betAmount,
+            currency: currency,
+            currencyRate: currencyRate,
+            slot: selectedSlot
+        };
+
+        console.log("🚀 Starting bot with payload:", payload);
+        setIsSubmitting(true);
+
+        try {
+            const response = await apiClient.post('/Trading/BotTrading', payload, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            console.log("📦 API Response:", response.data);
+
+            if (response.data?.result === "true") {
+                toast.success(`✅ Bot started successfully for ${selectedSlot} hours!`);
+                setBotStatus({ isRunning: true, progress: 0 });
+                setApiBotStatus(0);
+                // Refresh bot status after starting
+                fetchBotStatus();
+            } else {
+                toast.error(response.data?.message || '❌ Failed to start bot');
+                if (response.data?.message === "Bot Exits") {
+                    toast.warning('⚠️ Bot already exists!');
+                }
+            }
+        } catch (error) {
+            console.error("❌ API Error:", error.response || error);
+            toast.error(error.response?.data?.message || '❌ Failed to start bot');
+            if (error.response?.data?.message === "Bot Exits") {
+                toast.warning('⚠️ Bot already exists!');
+            }
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     // -------------------- RESIZE OBSERVER --------------------
@@ -230,10 +341,14 @@ const BotTreading = () => {
     const finishFlagX = roundStartIndex !== null ? xScale(roundStartIndex + POINTS_IN_ROUND) : -999;
     const startPriceY = roundStartPrice !== null ? yScale(roundStartPrice) : 0;
 
-
-
-    // -------------------- CHECK IF BOT IS DISABLED --------------------
-    const isBotDisabled = loading || apiBotStatus === 0 || botStatus.isRunning;
+    // ✅ Format time function
+    const formatTime = (seconds) => {
+        if (!seconds || seconds <= 0) return '00:00:00';
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    };
 
     // -------------------- RENDER --------------------
     return (
@@ -391,12 +506,14 @@ const BotTreading = () => {
                                 {/* Balance & Status */}
                                 <div className="d-flex justify-content-between align-items-center gap-3 mb-4" style={{ flexWrap: 'wrap' }}>
                                     <div style={{ flexShrink: 0 }}>
-                                        <small className="">Total Balance</small>
-                                        <h3 className="mb-0 fw-bold text-success" style={{ fontSize: 'clamp(1rem, 4vw, 1.75rem)' }}>
-                                            ${userData?.Invest || "0.00"}
-                                        </h3>
+                                        <h4>Total Balance</h4>
+                                        <Link to="/dashboard/BotTradingHistory">
+                                            <h3 className="mb-0 fw-bold text-success amount-report" style={{ fontSize: 'clamp(1rem, 4vw, 1.75rem)' }}>
+                                                ${userData?.Invest || "0.00"}
+                                            </h3>
+                                        </Link>
                                     </div>
-                                    <div className="d-flex align-items-center gap-3" style={{ flexWrap: 'wrap' }}>
+                                    <div className="d-flex align-items-center gap-1" >
                                         <select
                                             className="form-select"
                                             value={selectedCurrency}
@@ -416,11 +533,10 @@ const BotTreading = () => {
                                             <option value="INR">₹ INR</option>
                                         </select>
 
-                                        {/* Dropdown Button */}
+                                        {/* Slot Dropdown - Always Enabled */}
                                         <div ref={dropdownRef} style={{ position: 'relative', flexShrink: 0 }}>
                                             <button
-                                                onClick={() => !isBotDisabled && setShowDropdown(!showDropdown)}
-                                                disabled={isBotDisabled}
+                                                onClick={() => setShowDropdown(!showDropdown)}
                                                 style={{
                                                     padding: '6px 14px',
                                                     borderRadius: '12px',
@@ -429,8 +545,7 @@ const BotTreading = () => {
                                                     color: '#475569',
                                                     fontWeight: '600',
                                                     fontSize: 'clamp(11px, 1.5vw, 14px)',
-                                                    cursor: isBotDisabled ? 'not-allowed' : 'pointer',
-                                                    opacity: isBotDisabled ? 0.5 : 1,
+                                                    cursor: 'pointer',
                                                     transition: 'all 0.3s ease',
                                                     display: 'flex',
                                                     alignItems: 'center',
@@ -438,7 +553,7 @@ const BotTreading = () => {
                                                     whiteSpace: 'nowrap'
                                                 }}
                                             >
-                                                <span>Slot</span>
+                                                <span>{selectedSlot ? `${selectedSlot} Hrs` : 'Slot'}</span>
                                                 <FaChevronDown size={12} style={{
                                                     transform: showDropdown ? 'rotate(180deg)' : 'rotate(0deg)',
                                                     transition: 'transform 0.3s ease'
@@ -446,7 +561,7 @@ const BotTreading = () => {
                                             </button>
 
                                             {/* Dropdown Menu */}
-                                            {showDropdown && !isBotDisabled && (
+                                            {showDropdown && (
                                                 <div style={{
                                                     position: 'absolute',
                                                     top: '110%',
@@ -457,11 +572,11 @@ const BotTreading = () => {
                                                     boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
                                                     border: '1px solid #e2e8f0',
                                                     padding: '8px',
-                                                    minWidth: '80px',
+                                                    minWidth: '100px',
                                                     zIndex: 1000,
                                                     animation: 'slideDown 0.2s ease'
                                                 }}>
-                                                    {[36, 48, 72].map((slot) => (
+                                                    {[12].map((slot) => (
                                                         <button
                                                             key={slot}
                                                             onClick={() => handleSlotSelect(slot)}
@@ -499,52 +614,80 @@ const BotTreading = () => {
                                         </div>
                                     </div>
                                 </div>
-                                {/* Status Badge */}
-                              {!loading && (
-    <div className="d-flex justify-content-center my-3">
-        <button
-            className={`badge ${apiBotStatus === 0 ? 'bg-danger' : 'bg-success'} px-5 py-3 rounded-pill border-0`}
-            style={{
-                fontSize: '16px',
-                fontWeight: '600',
-                cursor: apiBotStatus === 0 ? 'pointer' : 'not-allowed',
-                opacity: apiBotStatus === 0 ? 1 : 0.7,
-                transition: 'all 0.3s ease',
-                minWidth: '140px',
-                letterSpacing: '0.5px'
-            }}
-            disabled={apiBotStatus !== 0}
-            onClick={() => {
-                if (apiBotStatus === 0) {
-                    // Start bot logic here
-                    console.log('Starting bot...');
-                }
-            }}
-        >
-            {apiBotStatus === 0 ? ' Start Bot' : ' Bot Running'}
-        </button>
-    </div>
-)}
-                            </div>
 
+                                {/* ✅ Start Bot Button - Status ke hisaab se */}
+                                {!loading && (
+                                    <div className="d-flex justify-content-center my-3">
+                                        {apiBotStatus === 0 ? (
+                                            // ✅ Status 0 = Bot Running
+                                            <button
+                                                className="btn px-5 py-3 rounded-pill border-0"
+                                                style={{
+                                                    backgroundColor: '#dc3545',
+                                                    color: '#ffffff',
+                                                    fontSize: '16px',
+                                                    fontWeight: '600',
+                                                    cursor: 'not-allowed',
+                                                    minWidth: '140px',
+                                                    letterSpacing: '0.5px',
+                                                    boxShadow: '0 4px 15px rgba(220, 53, 69, 0.3)',
+                                                    opacity: 0.8
+                                                }}
+                                                disabled
+                                            >
+                                                <div> Bot Running</div>
+                                                <small style={{ fontSize: '12px', opacity: 0.8 }}>
+                                                    {countdown}
+                                                </small>
+                                            </button>
+                                        ) : (
+                                            // ✅ Status 1 = Start Bot (Green)
+                                            <button
+                                                className="btn px-5 py-3 rounded-pill border-0"
+                                                style={{
+                                                    backgroundColor: isSubmitting ? '#94a3b8' : '#10b981',
+                                                    color: '#ffffff',
+                                                    fontSize: '16px',
+                                                    fontWeight: '600',
+                                                    cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                                                    minWidth: '140px',
+                                                    letterSpacing: '0.5px',
+                                                    boxShadow: isSubmitting ? 'none' : '0 4px 15px rgba(16, 185, 129, 0.3)',
+                                                    transition: 'all 0.3s ease',
+                                                    opacity: isSubmitting ? 0.7 : 1
+                                                }}
+                                                onClick={handleStartBot}
+                                                disabled={isSubmitting}
+                                                onMouseEnter={(e) => {
+                                                    if (!isSubmitting) {
+                                                        e.target.style.backgroundColor = '#059669';
+                                                        e.target.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.4)';
+                                                    }
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    if (!isSubmitting) {
+                                                        e.target.style.backgroundColor = '#10b981';
+                                                        e.target.style.boxShadow = '0 4px 15px rgba(16, 185, 129, 0.3)';
+                                                    }
+                                                }}
+                                            >
+                                                {isSubmitting ? (
+                                                    <>
+                                                        <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                                                        Starting...
+                                                    </>
+                                                ) : (
+                                                    ' Start Bot'
+                                                )}
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            {/* Dropdown Animation CSS */}
-            <style>{`
-                @keyframes slideDown {
-                    from {
-                        opacity: 0;
-                        transform: translateY(-10px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-            `}</style>
         </>
     );
 };

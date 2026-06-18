@@ -133,7 +133,7 @@ const WithdrawalRequest = () => {
             <div className="withdrawal-container">
                 <div className="withdrawal-card">
                   <div className="d-flex justify-content-between align-items-center mb-4">
-    <h3 className="withdrawal-title mb-0">Withdrawal Request</h3>
+    <h3 className="withdrawal-title mb-0">Income Payout</h3>
 <Link to="/dashboard/PayOutHistory"><button type="button" class="btn btn-primary mb-3">History</button></Link>
 </div>
                     

@@ -28,7 +28,7 @@ apiClient.interceptors.response.use(
       toast.error("Session expired !");
       
       // Clear local storage
-      localStorage.removeItem("token");
+      // localStorage.removeItem("token");
       localStorage.removeItem("user");
       localStorage.removeItem("isLoggedIn");
       

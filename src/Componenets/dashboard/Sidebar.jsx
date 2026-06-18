@@ -91,54 +91,7 @@ const Sidebar = ({ sidebarCollapsed, mobileSidebarOpen, closeMobileSidebar }) =>
                 {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Home</span>}
               </Link>
             </li>
-                        <li className="sidebar-item ms-1 ">
-              <Link 
-                className={`sidebar-link ${isActive('/InvestFund') ? 'active' : ''}`} 
-                to="/dashboard/InvestToken" 
-                onClick={handleLinkClick}
-              >
-                <span style={{fontSize: "20px"}}><RiHandCoinFill stroke={2}/></span>
-                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Token Maining</span>}
-              </Link>
-            </li>
-            
-
-            <li className="sidebar-item ms-1 ">
-              <Link 
-                className={`sidebar-link ${isActive('/InvestFund') ? 'active' : ''}`} 
-                to="/dashboard/SocalMediaTask" 
-                onClick={handleLinkClick}
-              >
-                <span><FaExternalLinkAlt stroke={2} /></span>
-                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Socal Media Task</span>}
-              </Link>
-            </li>
-            
-
-
-            <li className="sidebar-item">
-              <Link 
-                className={`sidebar-link ${isActive('/Subscription') ? 'active' : ''}`} 
-                to="/dashboard/BotTreading" 
-                onClick={handleLinkClick}
-              >
-                <span><IconLayoutBottombar stroke={2} /></span>
-                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Bot Trading</span>}
-              </Link>
-            </li>
-
                         <li className="sidebar-item">
-              <Link 
-                className={`sidebar-link ${isActive('/Subscription') ? 'active' : ''}`} 
-                to="/dashboard/DepositFund" 
-                onClick={handleLinkClick}
-              >
-                <span style={{fontSize: "20px"}}><FaWallet stroke={2} /></span>
-                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Deposit Fund</span>}
-              </Link>
-            </li>
-
-            <li className="sidebar-item">
               <Link 
                 className={`sidebar-link ${isActive('/InvestFund') ? 'active' : ''}`} 
                 to="/dashboard/InvestFund" 
@@ -148,17 +101,89 @@ const Sidebar = ({ sidebarCollapsed, mobileSidebarOpen, closeMobileSidebar }) =>
                 {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Invest</span>}
               </Link>
             </li>
-
-            <li className="sidebar-item">
+                                                <li className="sidebar-item">
               <Link 
-                className={`sidebar-link ${isActive('IncomePayout') ? 'active' : ''}`} 
-                to="/dashboard/IncomePayout" 
+                className={`sidebar-link ${isActive('/InvestmentHistory') ? 'active' : ''}`} 
+                to="/dashboard/InvestmentHistory"
                 onClick={handleLinkClick}
               >
-                <span><IconCreditCardRefund stroke={2} /></span>
-                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Income Payout</span>}
+                <span><IconHistory stroke={2} /></span>
+                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Invest History</span>}
               </Link>
             </li>
+
+                                    <li className="sidebar-item">
+              <Link 
+                className={`sidebar-link ${isActive('/Subscription') ? 'active' : ''}`} 
+                to="/dashboard/DepositFund" 
+                onClick={handleLinkClick}
+              >
+                <span style={{fontSize: "20px"}}><FaWallet stroke={2} /></span>
+                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Deposit Fund</span>}
+              </Link>
+            </li>
+                         <li className="sidebar-item">
+              <Link 
+                className={`sidebar-link ${isActive('/DepositHistory') ? 'active' : ''}`} 
+                to="/dashboard/DepositHistory"
+                onClick={handleLinkClick}
+              >
+                <span><IconHistory stroke={2} /></span>
+                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Deposit History</span>}
+              </Link>
+            </li>
+
+                        <li className="sidebar-item ms-1 ">
+              <Link 
+                className={`sidebar-link ${isActive('/InvestFund') ? 'active' : ''}`} 
+                to="/dashboard/InvestToken" 
+                onClick={handleLinkClick}
+              >
+                <span style={{fontSize: "20px"}}><RiHandCoinFill stroke={2}/></span>
+                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Token Mining</span>}
+              </Link>
+            </li>
+            
+                        <li className="sidebar-item">
+              <Link 
+                className={`sidebar-link ${isActive('/Subscription') ? 'active' : ''}`} 
+                to="/dashboard/BotTreading" 
+                onClick={handleLinkClick}
+              >
+                <span><IconLayoutBottombar stroke={2} /></span>
+                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Bot Trading</span>}
+              </Link>
+            </li>
+                                            <li className="sidebar-item">
+              <Link 
+                className={`sidebar-link ${isActive('/SelfTradingHistory') ? 'active' : ''}`} 
+                to="/dashboard/BotTradingHistory"
+                onClick={handleLinkClick}
+              >
+                <span><IconHistory stroke={2} /></span>
+                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Bot Trading History</span>}
+              </Link>
+            </li>
+                                   {/* <li className="sidebar-item">
+              <Link 
+                className={`sidebar-link ${isActive('/SelfTrading') ? 'active' : ''}`} 
+                to="/dashboard/SelfTrading" 
+                onClick={handleLinkClick}
+              >
+                <span><IconLayoutBottombar stroke={2} /></span>
+                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Self Trading</span>}
+              </Link>
+            </li> */}
+                                    {/* <li className="sidebar-item">
+              <Link 
+                className={`sidebar-link ${isActive('/SelfTradingHistory') ? 'active' : ''}`} 
+                to="/dashboard/SelfTradingHistory"
+                onClick={handleLinkClick}
+              >
+                <span><IconHistory stroke={2} /></span>
+                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Self Trading History</span>}
+              </Link>
+            </li> */}
 
             <li className="sidebar-item">
               <Link 
@@ -170,6 +195,32 @@ const Sidebar = ({ sidebarCollapsed, mobileSidebarOpen, closeMobileSidebar }) =>
                 {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Fund Transfer</span>}
               </Link>
             </li>
+
+
+
+
+            <li className="sidebar-item">
+              <Link 
+                className={`sidebar-link ${isActive('IncomePayout') ? 'active' : ''}`} 
+                to="/dashboard/IncomePayout" 
+                onClick={handleLinkClick}
+              >
+                <span><IconCreditCardRefund stroke={2} /></span>
+                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Income Payout</span>}
+              </Link>
+            </li>
+                                    <li className="sidebar-item">
+              <Link 
+                className={`sidebar-link ${isActive('/IncomeReport') ? 'active' : ''}`} 
+                to="/dashboard/IncomeReport" 
+                onClick={handleLinkClick}
+              >
+                <span><IconAward stroke={2} /></span>
+                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Income Report</span>}
+              </Link>
+            </li>
+
+
 
             {/* <li className="sidebar-item">
               <Link 
@@ -192,58 +243,9 @@ const Sidebar = ({ sidebarCollapsed, mobileSidebarOpen, closeMobileSidebar }) =>
                 {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Deposit History</span>}
               </Link>
             </li> */}
-                                <li className="sidebar-item">
-              <Link 
-                className={`sidebar-link ${isActive('/SelfTradingHistory') ? 'active' : ''}`} 
-                to="/dashboard/BotTradingHistory"
-                onClick={handleLinkClick}
-              >
-                <span><IconHistory stroke={2} /></span>
-                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Bot Trading History</span>}
-              </Link>
-            </li>
-                        <li className="sidebar-item">
-              <Link 
-                className={`sidebar-link ${isActive('/SelfTradingHistory') ? 'active' : ''}`} 
-                to="/dashboard/SelfTradingHistory"
-                onClick={handleLinkClick}
-              >
-                <span><IconHistory stroke={2} /></span>
-                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Self Trading History</span>}
-              </Link>
-            </li>
 
-                                    <li className="sidebar-item">
-              <Link 
-                className={`sidebar-link ${isActive('/InvestmentHistory') ? 'active' : ''}`} s
-                to="/dashboard/InvestmentHistory"
-                onClick={handleLinkClick}
-              >
-                <span><IconHistory stroke={2} /></span>
-                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Investment History</span>}
-              </Link>
-            </li>
 
-                        <li className="sidebar-item">
-              <Link 
-                className={`sidebar-link ${isActive('/IncomeReport') ? 'active' : ''}`} 
-                to="/dashboard/IncomeReport" 
-                onClick={handleLinkClick}
-              >
-                <span><IconAward stroke={2} /></span>
-                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Income Report</span>}
-              </Link>
-            </li>
-             <li className="sidebar-item">
-              <Link 
-                className={`sidebar-link ${isActive('/DepositHistory') ? 'active' : ''}`} 
-                to="/dashboard/DepositHistory"
-                onClick={handleLinkClick}
-              >
-                <span><IconHistory stroke={2} /></span>
-                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Deposit History</span>}
-              </Link>
-            </li>
+
 
             {/* Downline Team */}
             <li className="sidebar-item">
@@ -266,6 +268,16 @@ const Sidebar = ({ sidebarCollapsed, mobileSidebarOpen, closeMobileSidebar }) =>
               >
                 <span><IconBinaryTree2 stroke={2} /></span>
                 {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Tree View</span>}
+              </Link>
+            </li>
+                        <li className="sidebar-item ms-1 ">
+              <Link 
+                className={`sidebar-link ${isActive('/InvestFund') ? 'active' : ''}`} 
+                to="/dashboard/SocalMediaTask" 
+                onClick={handleLinkClick}
+              >
+                <span><FaExternalLinkAlt stroke={2} /></span>
+                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Socal Media Task</span>}
               </Link>
             </li>
 

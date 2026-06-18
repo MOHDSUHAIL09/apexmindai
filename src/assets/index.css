@@ -3385,7 +3385,7 @@ body {
   font-family: "Outfit", sans-serif;
 }
 
-::-webkit-scrollbar-track {
+/* ::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   background-color: rgb(15, 30, 46);
   background-color: rgb(var(--accent6));
@@ -3396,14 +3396,14 @@ body {
   background-color: rgb(var(--accent6));
   width: 6px;
   height: 6px;
-}
+} */
 
-::-webkit-scrollbar-thumb {
+/* ::-webkit-scrollbar-thumb {
   border-radius: 12px;
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   background-color: rgb(58, 150, 255);
   background-color: rgb(var(--primary));
-}
+} */
 
 ::-webkit-calendar-picker-indicator {
   filter: invert(1);

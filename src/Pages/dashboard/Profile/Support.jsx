@@ -52,7 +52,7 @@ const Support = () => {
     const regNo = getRegNo();
     setLoading(true);
     try {
-      const response = await apiClient.get('/Dashboard/ticket-list', {
+      const response = await apiClient.get('/Dashboard/TicketList', {
         params: { 
           PageIndex: page, 
           PageSize: pageSize, 
@@ -124,7 +124,7 @@ const Support = () => {
       formDataPayload.append('Message', ticketData.messege || '');
       if (selectedImage) formDataPayload.append('TicketImgage', selectedImage);
 
-      const response = await apiClient.post('/Dashboard/create-ticket', formDataPayload, {
+      const response = await apiClient.post('/Dashboard/CreateTicket', formDataPayload, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       
@@ -194,7 +194,7 @@ const Support = () => {
       <div className="container py-4">
         <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 px-2">
           <div>
-            <h1 className="h3 mb-1" style={{ fontWeight: '600', color: '#1a1a2e' }}>🎫 Ticket List</h1>
+            <h1 className="h3 mb-1" style={{ fontWeight: '600', color: '#1a1a2e' }}> Ticket List</h1>
             {totalRecords > 0 && (
               <p className="text-muted mb-0">Total Tickets: {totalRecords}</p>
             )}
@@ -258,205 +258,364 @@ const Support = () => {
           onPageChange={setPageIndex}
         />
 
-        {/* Premium Create Ticket Modal */}
-{/* Bootstrap Modal */}
-{showModal && (
-  <div 
-    className="modal fade show d-block" 
-    tabIndex="-1" 
-    style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }}
-  >
-    <div className="modal-dialog modal-dialog-centered modal-lg">
-      <div className="modal-content shadow-lg" style={{ borderRadius: '12px', overflow: 'hidden' }}>
-        
-        {/* Modal Header */}
-        <div className="modal-header" style={{ 
-          background: 'linear-gradient(135deg, #5D87FF 0%, #696cff 100%)',
-          borderBottom: 'none',
-          padding: '20px 24px'
-        }}>
-          <div>
-            <h4 className="modal-title text-white fw-semibold">
-              <i className="ti ti-ticket me-2"></i>
-              Create New Ticket
-            </h4>
-            <p className="text-white-50 mb-0 mt-1" style={{ fontSize: '14px' }}>
-              Submit your query and we'll get back to you
-            </p>
-          </div>
-          <button 
-            type="button" 
-            className="btn-close btn-close-white" 
+        {/* ✅ FIXED MODAL - Inline CSS */}
+        {showModal && (
+          <div 
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1050,
+              padding: '20px'
+            }}
             onClick={() => setShowModal(false)}
-          ></button>
-        </div>
-
-        {/* Modal Body */}
-        <form onSubmit={handleSubmit}>
-          <div className="modal-body" style={{ padding: '24px', background: '#f8fafc' }}>
-            
-            {/* Ticket Type */}
-            <div className="mb-4">
-              <label className="form-label fw-semibold mb-2">
-                <i className="ti ti-category me-1 text-primary"></i> 
-                Ticket Type <span className="text-danger">*</span>
-              </label>
-              <select 
-                name="ticketType" 
-                value={formData.ticketType} 
-                onChange={handleInputChange}
-                className="form-select form-select-lg"
-                style={{ 
-                  borderRadius: '12px', 
-                  border: '1px solid #e2e8f0',
-                  padding: '12px 16px'
-                }}
-                required
-              >
-                <option value="">-- Select Message Type --</option>
-                <option value="income">💰 Income</option>
-                <option value="withdrawal">💸 Withdrawal</option>
-                <option value="deposit">💳 Deposit</option>
-                <option value="purchase_bot">🤖 Purchase BOT</option>
-                <option value="profile">👤 Profile</option>
-                <option value="other">📝 Other</option>
-              </select>
-            </div>
-
-            {/* Subject */}
-            <div className="mb-4">
-              <label className="form-label fw-semibold mb-2">
-                <i className="ti ti-edit me-1 text-primary"></i> 
-                Subject <span className="text-danger">*</span>
-              </label>
-              <input
-                type="text"
-                name="subject"
-                value={formData.subject}
-                onChange={handleInputChange}
-                className="form-control form-control-lg"
-                placeholder="Enter ticket subject"
-                style={{ 
-                  borderRadius: '12px', 
-                  border: '1px solid #e2e8f0',
-                  padding: '12px 16px'
-                }}
-                required
-              />
-            </div>
-
-            {/* Message */}
-            <div className="mb-4">
-              <label className="form-label fw-semibold mb-2">
-                <i className="ti ti-message me-1 text-primary"></i> 
-                Message <span className="text-danger">*</span>
-              </label>
-              <textarea
-                name="messege"
-                value={formData.messege}
-                onChange={handleInputChange}
-                className="form-control"
-                placeholder="Enter detailed message..."
-                rows="5"
-                style={{ 
-                  borderRadius: '12px', 
-                  border: '1px solid #e2e8f0',
-                  padding: '12px 16px',
-                  resize: 'vertical'
-                }}
-                required
-              />
-            </div>
-
-            {/* Attachment */}
-            <div className="mb-3">
-              <label className="form-label fw-semibold mb-2">
-                <i className="ti ti-paperclip me-1 text-primary"></i> 
-                Attachment (Optional)
-              </label>
-              <div className="border rounded-3 p-4 text-center bg-white" style={{ 
-                border: '2px dashed #cbd5e0',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease'
+          >
+            <div 
+              style={{
+                backgroundColor: '#ffffff',
+                borderRadius: '12px',
+                maxWidth: '600px',
+                width: '100%',
+                maxHeight: '90vh',
+                overflowY: 'auto',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
               }}
-              onClick={() => document.getElementById('file-upload').click()}
-              onDragOver={(e) => {
-                e.preventDefault();
-                e.currentTarget.style.borderColor = '#5D87FF';
-                e.currentTarget.style.background = '#f0f4ff';
-              }}
-              onDragLeave={(e) => {
-                e.currentTarget.style.borderColor = '#cbd5e0';
-                e.currentTarget.style.background = '#ffffff';
-              }}
-              >
-                <input
-                  type="file"
-                  onChange={handleImageChange}
-                  accept="image/*"
-                  id="file-upload"
-                  style={{ display: 'none' }}
-                />
-                <i className="ti ti-cloud-upload" style={{ fontSize: '48px', color: '#5D87FF' }}></i>
-                <p className="mb-1 mt-2 fw-medium">Click or drag to upload</p>
-                <small className="text-muted">Supported: JPG, PNG, GIF (Max 5MB)</small>
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div style={{
+                background: 'linear-gradient(135deg, #5D87FF 0%, #696cff 100%)',
+                padding: '20px 24px',
+                borderTopLeftRadius: '12px',
+                borderTopRightRadius: '12px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start'
+              }}>
+                <div>
+                  <h4 style={{
+                    color: '#ffffff',
+                    fontWeight: '600',
+                    margin: 0,
+                    fontSize: '20px'
+                  }}>
+                    <i className="ti ti-ticket me-2"></i>
+                    Create New Ticket
+                  </h4>
+                  <p style={{
+                    color: 'rgba(255,255,255,0.8)',
+                    margin: '4px 0 0 0',
+                    fontSize: '14px'
+                  }}>
+                    Submit your query and we'll get back to you
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowModal(false)}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#ffffff',
+                    fontSize: '24px',
+                    cursor: 'pointer',
+                    padding: '0 4px',
+                    opacity: 0.8,
+                    transition: 'opacity 0.3s'
+                  }}
+                  onMouseEnter={(e) => e.target.style.opacity = '1'}
+                  onMouseLeave={(e) => e.target.style.opacity = '0.8'}
+                >
+                  ×
+                </button>
               </div>
-              
-              {selectedImage && (
-                <div className="mt-3 d-flex align-items-center justify-content-between bg-light p-3 rounded-3">
-                  <div className="d-flex align-items-center gap-2">
-                    <i className="ti ti-file text-primary fs-5"></i>
-                    <span className="small">{selectedImage.name}</span>
+
+              {/* Modal Body */}
+              <form onSubmit={handleSubmit}>
+                <div style={{ padding: '24px', background: '#f8fafc' }}>
+                  
+                  {/* Ticket Type */}
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{
+                      display: 'block',
+                      fontWeight: '600',
+                      marginBottom: '8px',
+                      color: '#1a1a2e',
+                      fontSize: '14px'
+                    }}>
+                      <i className="ti ti-category me-1" style={{ color: '#5D87FF' }}></i>
+                      Ticket Type <span style={{ color: '#dc3545' }}>*</span>
+                    </label>
+                    <select 
+                      name="ticketType" 
+                      value={formData.ticketType} 
+                      onChange={handleInputChange}
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        borderRadius: '12px',
+                        border: '1px solid #e2e8f0',
+                        fontSize: '14px',
+                        backgroundColor: '#ffffff',
+                        outline: 'none',
+                        transition: 'border-color 0.3s'
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = '#5D87FF'}
+                      onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+                      required
+                    >
+                      <option value="">-- Select Message Type --</option>
+                      <option value="income">💰 Income</option>
+                      <option value="withdrawal">💸 Withdrawal</option>
+                      <option value="deposit">💳 Deposit</option>
+                      <option value="purchase_bot">🤖 Purchase BOT</option>
+                      <option value="profile">👤 Profile</option>
+                      <option value="other">📝 Other</option>
+                    </select>
                   </div>
+
+                  {/* Subject */}
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{
+                      display: 'block',
+                      fontWeight: '600',
+                      marginBottom: '8px',
+                      color: '#1a1a2e',
+                      fontSize: '14px'
+                    }}>
+                      <i className="ti ti-edit me-1" style={{ color: '#5D87FF' }}></i>
+                      Subject <span style={{ color: '#dc3545' }}>*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleInputChange}
+                      placeholder="Enter ticket subject"
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        borderRadius: '12px',
+                        border: '1px solid #e2e8f0',
+                        fontSize: '14px',
+                        outline: 'none',
+                        transition: 'border-color 0.3s'
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = '#5D87FF'}
+                      onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+                      required
+                    />
+                  </div>
+
+                  {/* Message */}
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{
+                      display: 'block',
+                      fontWeight: '600',
+                      marginBottom: '8px',
+                      color: '#1a1a2e',
+                      fontSize: '14px'
+                    }}>
+                      <i className="ti ti-message me-1" style={{ color: '#5D87FF' }}></i>
+                      Message <span style={{ color: '#dc3545' }}>*</span>
+                    </label>
+                    <textarea
+                      name="messege"
+                      value={formData.messege}
+                      onChange={handleInputChange}
+                      placeholder="Enter detailed message..."
+                      rows="5"
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        borderRadius: '12px',
+                        border: '1px solid #e2e8f0',
+                        fontSize: '14px',
+                        resize: 'vertical',
+                        outline: 'none',
+                        fontFamily: 'inherit',
+                        transition: 'border-color 0.3s'
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = '#5D87FF'}
+                      onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+                      required
+                    />
+                  </div>
+
+                  {/* Attachment */}
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{
+                      display: 'block',
+                      fontWeight: '600',
+                      marginBottom: '8px',
+                      color: '#1a1a2e',
+                      fontSize: '14px'
+                    }}>
+                      <i className="ti ti-paperclip me-1" style={{ color: '#5D87FF' }}></i>
+                      Attachment (Optional)
+                    </label>
+                    <div 
+                      style={{
+                        border: '2px dashed #cbd5e0',
+                        borderRadius: '12px',
+                        padding: '32px 20px',
+                        textAlign: 'center',
+                        backgroundColor: '#ffffff',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onClick={() => document.getElementById('file-upload-support').click()}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.style.borderColor = '#5D87FF';
+                        e.currentTarget.style.backgroundColor = '#f0f4ff';
+                      }}
+                      onDragLeave={(e) => {
+                        e.currentTarget.style.borderColor = '#cbd5e0';
+                        e.currentTarget.style.backgroundColor = '#ffffff';
+                      }}
+                    >
+                      <input
+                        type="file"
+                        onChange={handleImageChange}
+                        accept="image/*"
+                        id="file-upload-support"
+                        style={{ display: 'none' }}
+                      />
+                      <i className="ti ti-cloud-upload" style={{ fontSize: '48px', color: '#5D87FF' }}></i>
+                      <p style={{ margin: '8px 0 4px 0', fontWeight: '500', color: '#1a1a2e' }}>
+                        Click or drag to upload
+                      </p>
+                      <small style={{ color: '#9ea5b3' }}>
+                        Supported: JPG, PNG, GIF (Max 5MB)
+                      </small>
+                    </div>
+                    
+                    {selectedImage && (
+                      <div style={{
+                        marginTop: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        backgroundColor: '#f1f5f9',
+                        padding: '12px 16px',
+                        borderRadius: '8px'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <i className="ti ti-file" style={{ color: '#5D87FF', fontSize: '20px' }}></i>
+                          <span style={{ fontSize: '14px', color: '#1a1a2e' }}>{selectedImage.name}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedImage(null)}
+                          style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: '#dc3545',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            padding: '4px 8px'
+                          }}
+                        >
+                          <i className="ti ti-trash me-1"></i> Remove
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Modal Footer */}
+                <div style={{
+                  padding: '16px 24px',
+                  backgroundColor: '#ffffff',
+                  borderTop: '1px solid #e9ecef',
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '12px',
+                  borderBottomLeftRadius: '12px',
+                  borderBottomRightRadius: '12px'
+                }}>
                   <button
                     type="button"
-                    className="btn btn-sm btn-link text-danger p-0"
-                    onClick={() => setSelectedImage(null)}
+                    onClick={() => setShowModal(false)}
+                    style={{
+                      padding: '10px 24px',
+                      borderRadius: '50px',
+                      border: '1px solid #e2e8f0',
+                      backgroundColor: 'transparent',
+                      color: '#475569',
+                      fontWeight: '500',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      transition: 'all 0.3s'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f1f5f9'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
                   >
-                    <i className="ti ti-trash"></i> Remove
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    style={{
+                      padding: '10px 28px',
+                      borderRadius: '50px',
+                      border: 'none',
+                      backgroundColor: submitting ? '#94a3b8' : '#5D87FF',
+                      color: '#ffffff',
+                      fontWeight: '500',
+                      cursor: submitting ? 'not-allowed' : 'pointer',
+                      fontSize: '14px',
+                      transition: 'all 0.3s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!submitting) e.target.style.backgroundColor = '#4a6fe0';
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!submitting) e.target.style.backgroundColor = '#5D87FF';
+                    }}
+                  >
+                    {submitting ? (
+                      <>
+                        <span style={{
+                          display: 'inline-block',
+                          width: '16px',
+                          height: '16px',
+                          border: '2px solid #ffffff',
+                          borderTop: '2px solid transparent',
+                          borderRadius: '50%',
+                          animation: 'spin 0.8s linear infinite'
+                        }}></span>
+                        Creating...
+                      </>
+                    ) : (
+                      <>
+                        <i className="ti ti-send"></i>
+                        Create Ticket
+                      </>
+                    )}
                   </button>
                 </div>
-              )}
+              </form>
             </div>
           </div>
+        )}
 
-          {/* Modal Footer */}
-          <div className="modal-footer" style={{ 
-            padding: '16px 24px', 
-            background: '#ffffff',
-            borderTop: '1px solid #e9ecef'
-          }}>
-            <button 
-              type="button" 
-              className="btn btn-light rounded-pill px-4"
-              onClick={() => setShowModal(false)}
-            >
-              Cancel
-            </button>
-            <button 
-              type="submit" 
-              className="btn btn-primary rounded-pill px-4"
-              disabled={submitting}
-              style={{ background: '#5D87FF', border: 'none' }}
-            >
-              {submitting ? (
-                <>
-                  <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                  Creating...
-                </>
-              ) : (
-                <>
-                  <i className="ti ti-send me-2"></i>
-                  Create Ticket
-                </>
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-)}
+        {/* Spinner Animation */}
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
       </div>
     </div>
   );

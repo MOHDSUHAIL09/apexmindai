@@ -29,6 +29,7 @@ import SelfTradingHistory from '../Pages/dashboard/SelfTradingHistory';
 import InvestToken from '../Pages/dashboard/Investtoken/InvestToken';
 import InvestTokenHistory from '../Pages/dashboard/Investtoken/InvestTokenHistory';
 import BotTradingHistory from '../Pages/dashboard/BotTradingHistory';
+// import SelfTrading from '../Pages/dashboard/SelfTrading';
 
 function DashboardLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -89,6 +90,7 @@ function DashboardLayout() {
             <Route path="Royalty" element={<Royalty />} />
             <Route path="reward" element={<Reward />} />
             <Route path="tree-view" element={<Treeview />} />
+            {/* <Route path="SelfTrading" element={<SelfTrading/>} /> */}
 
             <Route path="InvestToken" element={<InvestToken/>} />
             <Route path="InvestTokenHistory" element={<InvestTokenHistory/>} />

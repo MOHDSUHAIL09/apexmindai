@@ -120,9 +120,9 @@ export const UserProvider = ({ children }) => {
           TotalAmountBuyToken: apiData.TotalAmountBuyToken || 0,
           TotalTokenInWallet: apiData.TotalTokenInWallet || 0,
           TokenStakeBonus: apiData.TokenStakeBonus,
-          tokenBonusOnUpgrade: apiData.tokenBonusOnUpgrade,
-          
-
+          tokenBonusOnUpgrade: apiData.tokenBonusOnUpgrade,       
+          walletid: apiData.walletid,
+          TotalEarnTokenInWallet: apiData.TotalEarnTokenInWallet || 0,
 
         };
       

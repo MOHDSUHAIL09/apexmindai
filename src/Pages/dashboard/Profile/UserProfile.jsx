@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import Toast from '../../../Componenets/ui/Toast';
 
 const UserProfile = () => {
-  const { userData, updateUserData } = useUser();
+  const { userData} = useUser();
   const [loading, setLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [showMasterPassword, setShowMasterPassword] = useState(false);
@@ -16,24 +16,21 @@ const UserProfile = () => {
     emailId: "",
     mobileNumber: "",
     masterPassword: "",
-    bep20Wallet: "",
   });
 
   useEffect(() => {
     if (userData) {
-      // DIRECT LOCALSTORAGE SE LE
-      const savedWallet = localStorage.getItem("bep20Wallet") || "";
+
 
       const regNo = localStorage.getItem("Regno") || localStorage.getItem("regNo");
 
-      console.log("LocalStorage data:", { savedWallet, regNo });
+      console.log("LocalStorage data:", { regNo });
 
       setFormData({
         loginId: localStorage.getItem("loginId") || userData?.me || "",
         fullName: userData?.fname || "",
         emailId: userData?.email || "",
         mobileNumber: userData?.MobileNo || userData?.mobile || "",
-        bep20Wallet: savedWallet,
 
       });
       setLoading(false);
@@ -78,7 +75,6 @@ const UserProfile = () => {
 
       console.log("========== UPDATE PROFILE ==========");
       console.log("RegNo from localStorage:", regNo);
-      console.log("Wallet Address:", formData.bep20Wallet);
       console.log("Full Name:", formData.fullName);
       console.log("Email:", formData.emailId);
       console.log("Mobile:", formData.mobileNumber);
@@ -95,7 +91,6 @@ const UserProfile = () => {
         firstName: formData.fullName.split(' ')[0],
         lastName: formData.fullName.split(' ').slice(1).join(' ') || "",
         mobile: formData.mobileNumber,
-        walletAddress: formData.bep20Wallet || "",  // YAHAN WALLET ADDRESS BHEJ
         address: "",
         stateId: 0,
         cityId: 0,
@@ -110,8 +105,6 @@ const UserProfile = () => {
       console.log("API Response:", response.data);
 
       if (response.data?.result === "true" || response.data?.response === true) {
-        // SAVE TO LOCALSTORAGE
-        localStorage.setItem("bep20Wallet", formData.bep20Wallet);
 
         toast.success("✅ Profile updated successfully!");
 
@@ -133,15 +126,6 @@ const UserProfile = () => {
     }
   };
 
-  const handleCopyWallet = () => {
-    if (!formData.bep20Wallet) {
-      toast.error("No wallet address");
-      return;
-    }
-    navigator.clipboard.writeText(formData.bep20Wallet);
-    toast.success("Copied!");
-  };
-
   if (loading) {
     return (
       <div className="text-center p-5">
@@ -156,7 +140,7 @@ const UserProfile = () => {
       <Toast />
       <div className="container">
         <div className="row mt-4">
-          <div className="col-lg-8 mx-auto">
+          <div className="col-lg-8 ">
             <form onSubmit={handleSubmit}>
               <div className="card">
                 <div className="card-body">
@@ -208,26 +192,7 @@ const UserProfile = () => {
                     />
                   </div>
 
-                  <div className="mb-3">
-                    <label>BEP20 Wallet Address</label>
-                    <div className="input-group">
-                      <input
-                        type="text"
-                        name="bep20Wallet"
-                        value={formData.bep20Wallet}
-                        onChange={handleChange}
-                        className="form-control"
-                        placeholder="0x..."
-                      />
-                      <button
-                        type="button"
-                        className="btn btn-outline-secondary"
-                        onClick={handleCopyWallet}
-                      >
-                        Copy
-                      </button>
-                    </div>
-                  </div>
+
 
                   <div className="mb-3">
                     <label>Login Password *</label>
@@ -235,6 +200,7 @@ const UserProfile = () => {
                       <input
                         type={showMasterPassword ? "text" : "password"}
                         name="masterPassword"
+                        placeholder='Enter Your Password'
                         value={formData.masterPassword}
                         onChange={handleChange}
                         className="form-control"

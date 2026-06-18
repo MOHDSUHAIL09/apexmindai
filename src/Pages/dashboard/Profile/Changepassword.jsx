@@ -25,138 +25,52 @@ const ChangePassword = () => {
                 JSON.parse(localStorage.getItem('user'))?.regno || 
                 localStorage.getItem('regno');
 
-  // State for Login Password Change
-  const [loginOtp, setLoginOtp] = useState('');
-  const [loginCurrentPassword, setLoginCurrentPassword] = useState('');
-  const [loginNewPassword, setLoginNewPassword] = useState('');
-  const [loginConfirmPassword, setLoginConfirmPassword] = useState('');
-  const [loginLoading, setLoginLoading] = useState(false);
-  const [loginOtpSent, setLoginOtpSent] = useState(false);
-  const [loginOtpVerified, setLoginOtpVerified] = useState(false);
-  const [loginSendingOtp, setLoginSendingOtp] = useState(false);
-  const [loginVerifyingOtp, setLoginVerifyingOtp] = useState(false);
+  // State for Password Change
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  // State for Master Password Change
-  const [masterOtp, setMasterOtp] = useState('');
-  const [masterNewPassword, setMasterNewPassword] = useState('');
-  const [masterConfirmPassword, setMasterConfirmPassword] = useState('');
-  const [masterLoginPassword, setMasterLoginPassword] = useState('');
-  const [masterLoading, setMasterLoading] = useState(false);
-  const [masterOtpSent, setMasterOtpSent] = useState(false);
-  const [masterOtpVerified, setMasterOtpVerified] = useState(false);
-  const [masterSendingOtp, setMasterSendingOtp] = useState(false);
-  const [masterVerifyingOtp, setMasterVerifyingOtp] = useState(false);
-
-  // Helper function to clean API message
-  const cleanApiMessage = (message, defaultMsg) => {
-    if (!message) return defaultMsg;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const isEmail = emailRegex.test(message.trim());
-    const hasEmail = message.includes('@') && (message.includes('.com') || message.includes('.in') || message.includes('.net'));
-    if (isEmail || hasEmail) {
-      return defaultMsg;
-    }
-    return message;
-  };
-
-  // ========== SEND OTP (Login) ==========
-  const handleLoginSendOtp = async () => {
-    if (loginSendingOtp || loginOtpSent) return;
+  // ========== UPDATE PASSWORD ==========
+  const handleUpdatePassword = async () => {
+    if (loading) return;
     
-    if (!regno) {
-      toast.error('Registration number not found. Please login again.');
-      return;
-    }
-    
-    setLoginSendingOtp(true);
-    try {
-      const response = await apiClient.post(`/User/genrate-otp?loginid=${loginid}&regno=${regno}`, {});
-      
-      if (response.data.success || response.data.status === 'success') {
-        const cleanMessage = cleanApiMessage(response.data.message, 'OTP sent successfully!');
-        toast.success(cleanMessage);
-        setLoginOtpSent(true);
-      } else {
-        toast.error(response.data.message || 'Failed to send OTP');
-      }
-    } catch (error) {
-      const msg = error.response?.data?.message || 'Network error';
-      toast.error(msg);
-    } finally {
-      setLoginSendingOtp(false);
-    }
-  };
-
-  // ========== VERIFY OTP (Login) ==========
-  const handleLoginVerifyOtp = async () => {
-    if (loginVerifyingOtp || loginOtpVerified) return;
-    
-    if (!loginOtp) {
-      toast.error('Please enter OTP');
-      return;
-    }
-    
-    setLoginVerifyingOtp(true);
-    try {
-      const response = await apiClient.post('/User/verify-otp', null, {
-        params: { loginid, regno, otp: loginOtp }
-      });
-      
-      if (response.data.success) {
-        setLoginOtpVerified(true);
-        const cleanMessage = cleanApiMessage(response.data.message, 'OTP verified successfully!');
-        toast.success(cleanMessage);
-      } else {
-        toast.error(response.data.message || 'Invalid OTP');
-      }
-    } catch (error) {
-      const msg = error.response?.data?.message || 'Network error';
-      toast.error(msg);
-    } finally {
-      setLoginVerifyingOtp(false);
-    }
-  };
-
-  // ========== UPDATE LOGIN PASSWORD ==========
-  const handleLoginUpdatePassword = async () => {
-    if (loginLoading) return;
-    
-    if (!loginOtpVerified) {
-      toast.error('Please verify OTP first');
-      return;
-    }
-    if (!loginCurrentPassword) {
+    if (!currentPassword) {
       toast.error('Please enter current password');
       return;
     }
-    if (loginNewPassword !== loginConfirmPassword) {
+    if (!newPassword) {
+      toast.error('Please enter new password');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
       toast.error('New password and confirm password do not match');
       return;
     }
-    if (loginNewPassword.length < 8) {
+    if (newPassword.length < 8) {
       toast.error('Password must be at least 8 characters');
       return;
     }
+    if (currentPassword === newPassword) {
+      toast.error('New password cannot be same as current password');
+      return;
+    }
 
-    setLoginLoading(true);
+    setLoading(true);
     try {
       const response = await apiClient.post('/User/update-password', {
         regno: Number(regno),
-        current_password: loginCurrentPassword,
-        new_password: loginNewPassword
+        current_password: currentPassword,
+        new_password: newPassword
       });
       
       if (response.data.success) {
-        const cleanMessage = cleanApiMessage(response.data.message, 'Login password updated successfully!');
-        toast.success(cleanMessage);
+        toast.success('Password updated successfully!');
         
         // Reset form
-        setLoginOtp('');
-        setLoginCurrentPassword('');
-        setLoginNewPassword('');
-        setLoginConfirmPassword('');
-        setLoginOtpSent(false);
-        setLoginOtpVerified(false);
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
       } else {
         toast.error(response.data.message || 'Password update failed');
       }
@@ -167,201 +81,35 @@ const ChangePassword = () => {
       }
       toast.error(errorMsg);
     } finally {
-      setLoginLoading(false);
+      setLoading(false);
     }
   };
 
-  const handleLoginCancel = () => {
-    setLoginOtp('');
-    setLoginCurrentPassword('');
-    setLoginNewPassword('');
-    setLoginConfirmPassword('');
-    setLoginOtpSent(false);
-    setLoginOtpVerified(false);
-    toast('Login password change cancelled');
-  };
-
-  // ========== SEND OTP (Master) ==========
-  const handleMasterSendOtp = async () => {
-    if (masterSendingOtp || masterOtpSent) return;
-    
-    if (!regno) {
-      toast.error('Registration number not found.');
-      return;
-    }
-    
-    setMasterSendingOtp(true);
-    try {
-      const response = await apiClient.post(`/User/genrate-otp?loginid=${loginid}&regno=${regno}`, {});
-      
-      if (response.data.success || response.data.status === 'success') {
-        const cleanMessage = cleanApiMessage(response.data.message, 'OTP sent successfully!');
-        toast.success(cleanMessage);
-        setMasterOtpSent(true);
-      } else {
-        toast.error(response.data.message || 'Failed to send OTP');
-      }
-    } catch (error) {
-      const msg = error.response?.data?.message || 'Network error';
-      toast.error(msg);
-    } finally {
-      setMasterSendingOtp(false);
-    }
-  };
-
-  // ========== VERIFY OTP (Master) ==========
-  const handleMasterVerifyOtp = async () => {
-    if (masterVerifyingOtp || masterOtpVerified) return;
-    
-    if (!masterOtp) {
-      toast.error('Please enter OTP');
-      return;
-    }
-    
-    setMasterVerifyingOtp(true);
-    try {
-      const response = await apiClient.post('/User/verify-otp', null, {
-        params: { loginid, regno, otp: masterOtp }
-      });
-      
-      if (response.data.success) {
-        setMasterOtpVerified(true);
-        const cleanMessage = cleanApiMessage(response.data.message, 'OTP verified successfully!');
-        toast.success(cleanMessage);
-      } else {
-        toast.error(response.data.message || 'Invalid OTP');
-      }
-    } catch (error) {
-      const msg = error.response?.data?.message || 'Network error';
-      toast.error(msg);
-    } finally {
-      setMasterVerifyingOtp(false);
-    }
-  };
-
-  // ========== UPDATE MASTER PASSWORD ==========
-  const handleMasterUpdatePassword = async () => {
-    if (masterLoading) return;
-    
-    if (!masterOtpVerified) {
-      toast.error('Please verify OTP first');
-      return;
-    }
-    if (masterNewPassword !== masterConfirmPassword) {
-      toast.error('New master password and confirm password do not match');
-      return;
-    }
-    if (masterNewPassword.length < 8) {
-      toast.error('Master password must be at least 8 characters');
-      return;
-    }
-    if (!masterLoginPassword) {
-      toast.error('Please enter login password for verification');
-      return;
-    }
-
-    setMasterLoading(true);
-    try {
-      const response = await apiClient.post('/User/update-master-password', {
-        regno: Number(regno),
-        current_password: masterLoginPassword,
-        new_password: masterNewPassword,
-        otp: masterOtp
-      });
-      
-      if (response.data.success) {
-        const cleanMessage = cleanApiMessage(response.data.message, 'Master password updated successfully!');
-        toast.success(cleanMessage);
-        
-        // Update localStorage
-        localStorage.setItem('masterPassword', masterNewPassword);
-        
-        // Reset form
-        setMasterOtp('');
-        setMasterNewPassword('');
-        setMasterConfirmPassword('');
-        setMasterLoginPassword('');
-        setMasterOtpSent(false);
-        setMasterOtpVerified(false);
-      } else {
-        toast.error(response.data.message || 'Master password update failed');
-      }
-    } catch (error) {
-      let errorMsg = 'Failed to update master password';
-      if (error.response?.data?.message) {
-        errorMsg = error.response.data.message;
-      }
-      toast.error(errorMsg);
-    } finally {
-      setMasterLoading(false);
-    }
-  };
-
-  const handleMasterCancel = () => {
-    setMasterOtp('');
-    setMasterNewPassword('');
-    setMasterConfirmPassword('');
-    setMasterLoginPassword('');
-    setMasterOtpSent(false);
-    setMasterOtpVerified(false);
-    toast('Master password change cancelled');
+  const handleCancel = () => {
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    toast('Password change cancelled');
   };
 
   // Button disable conditions
-  const isLoginSendOtpDisabled = loginSendingOtp || loginOtpSent;
-  const isLoginVerifyOtpDisabled = loginVerifyingOtp || loginOtpVerified || !loginOtp;
-  const isLoginUpdateDisabled = loginLoading || !loginOtpVerified || !loginCurrentPassword || !loginNewPassword || !loginConfirmPassword || loginNewPassword !== loginConfirmPassword || loginNewPassword.length < 8;
-  
-  const isMasterSendOtpDisabled = masterSendingOtp || masterOtpSent;
-  const isMasterVerifyOtpDisabled = masterVerifyingOtp || masterOtpVerified || !masterOtp;
-  const isMasterUpdateDisabled = masterLoading || !masterOtpVerified || !masterNewPassword || !masterConfirmPassword || !masterLoginPassword || masterNewPassword !== masterConfirmPassword || masterNewPassword.length < 8;
+  const isUpdateDisabled = loading || !currentPassword || !newPassword || !confirmPassword || 
+                           newPassword !== confirmPassword || newPassword.length < 8;
 
   return (
     <div className="row">
-      {/* Change Login Password Card */}
-      <div className="col-lg-6 mb-4">
-        <div className="card shadow-none border h-100">
+      <div className="col-lg-8">
+        <div className="card shadow-none border">
           <div className="card-body">
-            <h4 className="mb-4">Change Login Password</h4>
-
-            <div className="mb-3">
-              <label className="form-label">OTP</label>
-              <div className="input-group">
-                <input
-                  type="text"
-                  value={loginOtp}
-                  onChange={(e) => setLoginOtp(e.target.value)}
-                  placeholder="Enter OTP"
-                  className="form-control"
-                  disabled={loginOtpVerified}
-                />
-                {!loginOtpSent ? (
-                  <button 
-                    onClick={handleLoginSendOtp} 
-                    disabled={isLoginSendOtpDisabled}
-                    className="btn btn-primary"
-                  >
-                    {loginSendingOtp ? 'Sending...' : 'Send OTP'}
-                  </button>
-                ) : (
-                  <button 
-                    onClick={handleLoginVerifyOtp} 
-                    disabled={isLoginVerifyOtpDisabled}
-                    className="btn btn-success"
-                  >
-                    {loginVerifyingOtp ? 'Verifying...' : 'Verify OTP'}
-                  </button>
-                )}
-              </div>
-            </div>
+            <h4 className="mb-4">Change Password</h4>
 
             <div className="mb-3">
               <label className="form-label">Current Password</label>
               <input
                 type="password"
-                value={loginCurrentPassword}
-                onChange={(e) => setLoginCurrentPassword(e.target.value)}
-                placeholder="Current Password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                placeholder="Enter current password"
                 className="form-control"
               />
             </div>
@@ -370,13 +118,16 @@ const ChangePassword = () => {
               <label className="form-label">New Password</label>
               <input
                 type="password"
-                value={loginNewPassword}
-                onChange={(e) => setLoginNewPassword(e.target.value)}
-                placeholder="New Password (min 8 characters)"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="New password (min 8 characters)"
                 className="form-control"
               />
-              {loginNewPassword && loginNewPassword.length < 8 && (
+              {newPassword && newPassword.length < 8 && (
                 <small className="text-danger">Password must be at least 8 characters</small>
+              )}
+              {newPassword && newPassword.length >= 8 && (
+                <small className="text-success">✅ Password strength: Good</small>
               )}
             </div>
 
@@ -384,117 +135,28 @@ const ChangePassword = () => {
               <label className="form-label">Confirm New Password</label>
               <input
                 type="password"
-                value={loginConfirmPassword}
-                onChange={(e) => setLoginConfirmPassword(e.target.value)}
-                placeholder="Confirm New Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm new password"
                 className="form-control"
               />
-              {loginConfirmPassword && loginNewPassword !== loginConfirmPassword && (
+              {confirmPassword && newPassword !== confirmPassword && (
                 <small className="text-danger">Passwords do not match</small>
+              )}
+              {confirmPassword && newPassword === confirmPassword && newPassword.length >= 8 && (
+                <small className="text-success">✅ Passwords match</small>
               )}
             </div>
 
             <div className="d-flex gap-2">
               <button 
-                onClick={handleLoginUpdatePassword} 
-                disabled={isLoginUpdateDisabled}
+                onClick={handleUpdatePassword} 
+                disabled={isUpdateDisabled}
                 className="btn btn-primary flex-grow-1"
               >
-                {loginLoading ? 'Updating...' : 'Update Login Password'}
+                {loading ? 'Updating...' : 'Update Password'}
               </button>
-              <button onClick={handleLoginCancel} className="btn btn-secondary">
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Change Master Password Card */}
-      <div className="col-lg-6 mb-4">
-        <div className="card shadow-none border h-100">
-          <div className="card-body">
-            <h4 className="mb-4">Change Master Password</h4>
-
-            <div className="mb-3">
-              <label className="form-label">OTP</label>
-              <div className="input-group">
-                <input
-                  type="text"
-                  value={masterOtp}
-                  onChange={(e) => setMasterOtp(e.target.value)}
-                  placeholder="Enter OTP"
-                  className="form-control"
-                  disabled={masterOtpVerified}
-                />
-                {!masterOtpSent ? (
-                  <button 
-                    onClick={handleMasterSendOtp} 
-                    disabled={isMasterSendOtpDisabled}
-                    className="btn btn-primary"
-                  >
-                    {masterSendingOtp ? 'Sending...' : 'Send OTP'}
-                  </button>
-                ) : (
-                  <button 
-                    onClick={handleMasterVerifyOtp} 
-                    disabled={isMasterVerifyOtpDisabled}
-                    className="btn btn-success"
-                  >
-                    {masterVerifyingOtp ? 'Verifying...' : 'Verify OTP'}
-                  </button>
-                )}
-              </div>
-            </div>
-
-            <div className="mb-3">
-              <label className="form-label">New Master Password</label>
-              <input
-                type="password"
-                value={masterNewPassword}
-                onChange={(e) => setMasterNewPassword(e.target.value)}
-                placeholder="New Master Password (min 8 characters)"
-                className="form-control"
-              />
-              {masterNewPassword && masterNewPassword.length < 8 && (
-                <small className="text-danger">Password must be at least 8 characters</small>
-              )}
-            </div>
-
-            <div className="mb-3">
-              <label className="form-label">Confirm New Master Password</label>
-              <input
-                type="password"
-                value={masterConfirmPassword}
-                onChange={(e) => setMasterConfirmPassword(e.target.value)}
-                placeholder="Confirm New Master Password"
-                className="form-control"
-              />
-              {masterConfirmPassword && masterNewPassword !== masterConfirmPassword && (
-                <small className="text-danger">Passwords do not match</small>
-              )}
-            </div>
-
-            <div className="mb-3">
-              <label className="form-label">Login Password (For Verification)</label>
-              <input
-                type="password"
-                value={masterLoginPassword}
-                onChange={(e) => setMasterLoginPassword(e.target.value)}
-                placeholder="Enter your login password"
-                className="form-control"
-              />
-            </div>
-
-            <div className="d-flex gap-2">
-              <button 
-                onClick={handleMasterUpdatePassword} 
-                disabled={isMasterUpdateDisabled}
-                className="btn btn-warning flex-grow-1"
-              >
-                {masterLoading ? 'Updating...' : 'Update Master Password'}
-              </button>
-              <button onClick={handleMasterCancel} className="btn btn-secondary">
+              <button onClick={handleCancel} className="btn btn-secondary">
                 Cancel
               </button>
             </div>

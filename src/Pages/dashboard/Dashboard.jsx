@@ -82,96 +82,74 @@ const Dashboard = () => {
 
 
     const displayBalance = userData?.WorkingWallet || 0;
-    const walletAddress = localStorage.getItem('bep20Wallet') || "0x1234567890abcdef1234567890abcdef12345678";
+    // const walletAddress = localStorage.getItem('bep20Wallet') || "0x1234567890abcdef1234567890abcdef12345678";
 
-    console.log(walletAddress); // '0x1234567890abcdef1234567890abcdef12345678'
-
-
+    // console.log(walletAddress); // '0x1234567890abcdef1234567890abcdef12345678'
 
 
-// Timer effect - sirf timer ke liye
-// useEffect(() => {
-//     if (!userData?.status) return;
-
-//     const timer = setInterval(() => {
-//         const targetDate = new Date(userData.status).getTime();
-//         const now = new Date().getTime();
-//         const difference = targetDate - now;
-
-//         if (difference <= 0) {
-//             setCountdown("00H : 00M : 00S");
-//             clearInterval(timer);
-//             return;
-//         }
-
-//         const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-//         const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-//         const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-//         setCountdown(
-//             `${hours.toString().padStart(2, "0")}H : ${minutes
-//                 .toString()
-//                 .padStart(2, "0")}M : ${seconds
-//                     .toString()
-//                     .padStart(2, "0")}S`
-//         );
-//     }, 1000);
-
-//     return () => clearInterval(timer);
-// }, [userData?.status]);
 
 
+    // Timer effect - sirf timer ke liye
+    // useEffect(() => {
+    //     if (!userData?.status) return;
+
+    //     const timer = setInterval(() => {
+    //         const targetDate = new Date(userData.status).getTime();
+    //         const now = new Date().getTime();
+    //         const difference = targetDate - now;
+
+    //         if (difference <= 0) {
+    //             setCountdown("00H : 00M : 00S");
+    //             clearInterval(timer);
+    //             return;
+    //         }
+
+    //         const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    //         const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+    //         const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+    //         setCountdown(
+    //             `${hours.toString().padStart(2, "0")}H : ${minutes
+    //                 .toString()
+    //                 .padStart(2, "0")}M : ${seconds
+    //                     .toString()
+    //                     .padStart(2, "0")}S`
+    //         );
+    //     }, 1000);
+
+    //     return () => clearInterval(timer);
+    // }, [userData?.status]);
 
 
 
 useEffect(() => {
-    // ✅ Wait for userData to load
-    if (!userData) {
-        setCountdown("Loading...");
-        return;
+  if (!userData?.status) return;
+
+  // "2026-06-19 05:00:56" -> "2026-06-19T05:00:56+04:00"
+  const targetTime = new Date(
+    userData.status.replace(" ", "T") + "+04:00"
+  ).getTime();
+
+  const timer = setInterval(() => {
+    const diff = targetTime - Date.now();
+
+    if (diff <= 0) {
+      setCountdown("00H : 00M : 00S");
+      clearInterval(timer);
+      return;
     }
 
-    // ✅ Agar status nahi hai toh default timer chalao
-    let targetTime;
-    
-    if (userData?.status && userData.status !== "1900-01-01T00:00:00") {
-        // Agar valid date hai toh use karo
-        targetTime = new Date(userData.status).getTime();
-        console.log("🎯 Using status date:", new Date(targetTime));
-    } else {
-        // Nahi toh 30 days ka default timer
-        targetTime = new Date().getTime() + ( 24 * 60 * 60 * 1000);
-        console.log("🎯 Using default 30 days timer");
-    }
+    const hours = Math.floor(diff / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
 
-    const timer = setInterval(() => {
-        const now = new Date().getTime();
-        const difference = targetTime - now;
+    setCountdown(
+      `${String(hours).padStart(2, "0")}H : ${String(minutes).padStart(2, "0")}M : ${String(seconds).padStart(2, "0")}S`
+    );
+  }, 1000);
 
-        console.log("📊 Remaining:", difference, "ms");
-
-        if (difference <= 0) {
-            setCountdown("00H : 00M : 00S");
-            clearInterval(timer);
-            return;
-        }
-
-        // ✅ Sirf Hours, Minutes, Seconds
-        const hours = Math.floor(difference / (1000 * 60 * 60));
-        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-        setCountdown(
-            `${hours.toString().padStart(2, "0")}H : ${minutes
-                .toString()
-                .padStart(2, "0")}M : ${seconds
-                    .toString()
-                    .padStart(2, "0")}S`
-        );
-    }, 1000);
-
-    return () => clearInterval(timer);
-}, [userData]); // ✅ userData ko dependency mein add karo
+  return () => clearInterval(timer);
+}, [userData?.status]);
     // const handleBotTrading = async () => {
     //     try {
     //         setBotLoading(true);
@@ -487,7 +465,7 @@ useEffect(() => {
                                         <button
                                             className="invite-btn btn d-block d-sm-none"
                                             style={{
-                                                backgroundColor: Number(userData?.kid) > 0 ? "#04832f" : "#dc3545",
+                                                backgroundColor: Number(userData?.kid) > 1 ? "#04832f" : "#dc3545",
                                                 color: "#fff",
                                                 border: "none",
                                                 padding: "6px 16px",
@@ -496,7 +474,7 @@ useEffect(() => {
                                                 fontWeight: "500",
                                             }}
                                         >
-                                            {Number(userData?.kid) > 0 ? "Active" : "Inactive"}
+                                            {Number(userData?.kid) > 1 ? "Active" : "Inactive"}
                                         </button>
                                     </div>
 
@@ -519,7 +497,7 @@ useEffect(() => {
                                                 <div className="card01 border-0 shadow-sm">
                                                     <Link to='/dashboard/InvestmentHistory' className="text-decoration-none">
                                                         <div className="card-body01 p-2 text-center">
-                                                            <p className="income-text text-muted mb-1 small">Invest</p>
+                                                            <p className="income-text text-muted mb-1 small">Invest Amount</p>
                                                             <h6 className="income-balance mb-0 fw-bold text-dark">
                                                                 ${userData?.Invest?.toFixed(2) || '0.00'}
                                                             </h6>
@@ -550,9 +528,9 @@ useEffect(() => {
                                                         BOT EXPIRE
                                                     </div>
 
-                                            <div className="left-timer">
-    {countdown || "Loading..."}
-</div>
+                                                    <div className="left-timer">
+                                                        {countdown || "Loading..."}
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -575,7 +553,7 @@ useEffect(() => {
                                         <button
                                             className="btn d-none d-sm-inline-block position-absolute"
                                             style={{
-                                                backgroundColor: Number(userData?.kid) === 1 ? "#04832f" : "#dc3545",
+                                                backgroundColor: Number(userData?.kid) > 0 ? "#04832f" : "#dc3545",
                                                 color: "white",
                                                 border: "none",
                                                 padding: "8px 24px",
@@ -595,7 +573,7 @@ useEffect(() => {
                                                     fontWeight: "700",
                                                 }}
                                             >
-                                                {Number(userData?.kid) === 1 ? "Active" : "Inactive"}
+                                                {Number(userData?.kid) > 0 ? "Active" : "Inactive"}
                                             </span>
                                         </button>
                                         <img
@@ -612,17 +590,70 @@ useEffect(() => {
                 </div>
 
                 {/* Income Wallet */}
+                {/* Income Wallet */}
                 <div className="col-md-6 col-lg-4 d-flex align-items-stretch">
                     <div className="card w-100">
                         <div className="card-body01 px-3 mt-3">
                             <div style={{ fontWeight: "900", fontSize: "20px" }}>Income Wallet</div>
-                            <div style={{ height: "130px", position: "relative", marginTop: "40px" }}>
-                                <Doughnut
-                                    data={{ labels: ["Profit", "Expense"], datasets: [{ data: [65, 35], backgroundColor: ["#5D87FF", "#ECF2FF"], borderWidth: 0, cutout: "78%" }] }}
-                                    options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: true } } }}
-                                />
-                                <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", textAlign: "center", }}>
-                                    <h5 style={{ fontWeight: "700", color: "#5A6A85" }}>${userData?.WorkingWallet || "0.00"}</h5>
+                            <div style={{ height: "130px", position: "relative", marginTop: "25px" }}>
+                                {(() => {
+                                    // ✅ Total amount from userData
+                                    const totalAmount = Number(userData?.WorkingWallet) || 0;
+
+                                    // ✅ Agar amount 0 hai toh default values
+                                    const profit = totalAmount * 0.65;  // 65% Profit
+                                    const expense = totalAmount * 0.35; // 35% Expense
+
+                                    return (
+                                        <Doughnut
+                                            data={{
+                                                labels: ["Profit", "Expense"],
+                                                datasets: [{
+                                                    data: [
+                                                        totalAmount > 0 ? profit : 50,  // Agar 0 hai toh 50% each
+                                                        totalAmount > 0 ? expense : 50
+                                                    ],
+                                                    backgroundColor: [
+                                                        "#5D87FF",  // Profit - Blue
+                                                        "#ECF2FF"   // Expense - Light Blue
+                                                    ],
+                                                    borderWidth: 0,
+                                                    cutout: "78%"
+                                                }]
+                                            }}
+                                            options={{
+                                                responsive: true,
+                                                maintainAspectRatio: false,
+                                                plugins: {
+                                                    legend: { display: false },
+                                                    tooltip: {
+                                                        callbacks: {
+                                                            label: function (context) {
+                                                                const value = context.parsed || 0;
+                                                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                                                return `${context.label}: $${value.toFixed(2)} (${percentage}%)`;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }}
+                                        />
+                                    );
+                                })()}
+                                <div style={{
+                                    position: "absolute",
+                                    top: "50%",
+                                    left: "50%",
+                                    transform: "translate(-50%, -50%)",
+                                    textAlign: "center",
+                                }}>
+                                    <h5 style={{ fontWeight: "700", color: "#5A6A85" }}>
+                                        ${Number(userData?.WorkingWallet || 0).toFixed(2)}
+                                    </h5>
+                                    <small style={{ fontSize: "10px", color: "#9ea5b3" }}>
+                                        Total Balance
+                                    </small>
                                 </div>
                             </div>
                         </div>
@@ -641,7 +672,7 @@ useEffect(() => {
                                         <div>
                                             <p className="text-muted mb-1">Bot Income</p>
                                             <h5 className="fw-bold mb-0 amount-report">
-                                                ${userData?.LevelIncome?.toLocaleString() || '0.00'}
+                                                ${userData?.AIBOTIncome?.toLocaleString() || '0.00'}
                                             </h5>
                                         </div>
                                         <div className="p-2 bg-primary-subtle rounded-2">
@@ -679,7 +710,7 @@ useEffect(() => {
                                         <div>
                                             <p className="text-muted mb-1">Direct Income</p>
                                             <h5 className="fw-bold mb-0 amount-report">
-                                                ${userData?.SocialBonus?.toLocaleString() || '0.00'}
+                                                ${userData?.SponsorIncome?.toLocaleString() || '0.00'}
                                             </h5>
                                         </div>
                                         <div className="p-2 bg-info-subtle rounded-2">
@@ -704,7 +735,7 @@ useEffect(() => {
                                             <div>
                                                 <p className="text-muted mb-1">Salary</p>
                                                 <h5 className="fw-bold mb-0 amount-report">
-                                                    ${userData?.DirectIncome?.toLocaleString() || '0.00'}
+                                                    ${userData?.Salary?.toLocaleString() || '0.00'}
                                                 </h5>
                                             </div>
                                         </Link>
@@ -724,7 +755,7 @@ useEffect(() => {
                                         <div>
                                             <p className="text-muted mb-1">Reward</p>
                                             <h5 className="fw-bold mb-0 amount-report">
-                                                ${userData?.SponsorIncome?.toLocaleString() || '0.00'}
+                                                ${userData?.Reward?.toLocaleString() || '0.00'}
                                             </h5>
                                         </div>
                                         <div className="p-2 bg-warning-subtle rounded-2">
@@ -741,9 +772,9 @@ useEffect(() => {
                                 <div className="card-body p-3">
                                     <div className="d-flex justify-content-between align-items-start mb-2">
                                         <div>
-                                            <p className="text-muted mb-1">Apex Mining</p>
+                                            <p className="text-muted mb-1">Payoutable</p>
                                             <h5 className="fw-bold mb-0 amount-report">
-                                                ${userData?.SponsorIncome?.toLocaleString() || '0.00'}
+                                                ${userData?.TotalIncome?.toLocaleString() || '0.00'}
                                             </h5>
                                         </div>
                                         <div className="p-2 bg-warning-subtle rounded-2">
@@ -758,7 +789,6 @@ useEffect(() => {
                 </div>
 
 
-
                 {/* Apex mind Token */}
                 <div className="col-lg-4">
                     <div className="row">
@@ -766,8 +796,19 @@ useEffect(() => {
                             <div className="card w-100">
                                 <div className="card-body">
                                     <div className='d-flex'>
-                                        <div className="p-2 bg-primary-subtle d-inline-block mb-3"><FaArrowTurnDown fontSize={18} /></div>
-                                        <div className='ms-3' style={{ fontSize: "18px", fontWeight: '800' }}>Apexmind</div>
+                                        <div className="p-2  d-inline-block mb-3">
+
+
+                                            <img
+                                                src={apexcoin}
+                                                alt="Apex Coin"
+                                                style={{
+                                                    width: "24px",
+                                                    height: "24px",
+                                                    borderRadius: "50%"
+                                                }}
+                                            /></div>
+                                        <div className='mt-1 ms-1' style={{ fontSize: "18px", fontWeight: '800' }}>Apexmind</div>
                                     </div>
 
                                     <div style={{ height: "65px" }}>
@@ -822,7 +863,7 @@ useEffect(() => {
 
                 <hr className='mb-2' style={{ backgroundColor: "black", height: "1px" }} />
                 <div className='text-dark'>
-                    <h3 className='mb-3'>Apex Mind Program</h3>
+                    <h3 className='mb-3'>Apex Minning Program</h3>
                 </div>
                 {/* Team/Business Details Section */}
                 <div className="container-fluid">
@@ -901,7 +942,7 @@ useEffect(() => {
                                                                     {userData?.TotalTokenInWallet || '0'}
                                                                 </div>
                                                             </div>
-                                                          </div>
+                                                        </div>
                                                         <div className="p-2 bg-primary-subtle rounded-2 ms-2" style={{
                                                             backgroundColor: "rgba(13, 110, 253, 0.1)",
                                                             borderRadius: "8px",
@@ -942,11 +983,11 @@ useEffect(() => {
                                                                 fontSize: "23px",
                                                                 marginBottom: "6px"
                                                             }}>
-                                                                ${((userData?.TotalTokenInWallet || 0) * (userData?.CoinRate || 0)).toFixed(2)}
+                                                                ${((userData?.TotalEarnTokenInWallet || 0) * (userData?.CoinRate || 0)).toFixed(2)}
                                                             </div>
 
                                                             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                                               
+
                                                                 <div className='mt-2'>
                                                                     <p style={{
                                                                         fontSize: "16x",
@@ -956,58 +997,58 @@ useEffect(() => {
                                                                     }}>
                                                                         Overall Token
                                                                     </p>
-                                                                  
-                                                                           <div className='mt-1' style={{
-                                                                    display: "flex",
-                                                                    alignItems: "center",
-                                                                    gap: "8px",
-                                                                    color: "green",
-                                                                    fontWeight: "700",
-                                                                    fontSize: "22px"
-                                                                }}>
-                                                                         <img
-                                                                    src={apexcoin}
-                                                                    alt="Apex Coin"
-                                                                    style={{
-                                                                        width: "24px",
-                                                                        height: "24px",
-                                                                        borderRadius: "50%"
-                                                                    }}
-                                                                />
-                                                                        {userData?.TotalTokenInWallet || '0'}
-                                                                    </div></div>
-                                                                </div></div>
-                                                            </div>
 
-                                                            <p style={{
-                                                                fontSize: "15px",
-                                                                fontWeight: "500",
-                                                                color: "#6c757d",
-                                                                marginBottom: "0",
-                                                                marginTop: "4px"
-                                                            }}>
-                                                                Token Live Price:
-                                                                <span style={{
-                                                                    color: "green",
-                                                                    fontWeight: "700",
-                                                                    marginLeft: "4px",
-                                                                    fontSize: "15px"
-                                                                }}>
-                                                                    ${userData?.CoinRate || '0.00'}
-                                                                </span>
-                                                            </p>
-                                                        </div>
-                                                        <div className="p-2 bg-success-subtle rounded-2 ms-2" style={{
-                                                            backgroundColor: "rgba(40, 167, 69, 0.1)",
-                                                            borderRadius: "8px",
-                                                            padding: "8px"
-                                                        }}>
-                                                            <i className="ti ti-gift fs-5 text-success" style={{ fontSize: "20px", color: "green" }}></i>
-                                                        </div>
+                                                                    <div className='mt-1' style={{
+                                                                        display: "flex",
+                                                                        alignItems: "center",
+                                                                        gap: "8px",
+                                                                        color: "green",
+                                                                        fontWeight: "700",
+                                                                        fontSize: "22px"
+                                                                    }}>
+                                                                        <img
+                                                                            src={apexcoin}
+                                                                            alt="Apex Coin"
+                                                                            style={{
+                                                                                width: "24px",
+                                                                                height: "24px",
+                                                                                borderRadius: "50%"
+                                                                            }}
+                                                                        />
+                                                                        {userData?.TotalEarnTokenInWallet || '0'}
+                                                                    </div></div>
+                                                            </div></div>
                                                     </div>
+
+                                                    <p style={{
+                                                        fontSize: "15px",
+                                                        fontWeight: "500",
+                                                        color: "#6c757d",
+                                                        marginBottom: "0",
+                                                        marginTop: "4px"
+                                                    }}>
+                                                        Token Live Price:
+                                                        <span style={{
+                                                            color: "green",
+                                                            fontWeight: "700",
+                                                            marginLeft: "4px",
+                                                            fontSize: "15px"
+                                                        }}>
+                                                            ${userData?.CoinRate || '0.00'}
+                                                        </span>
+                                                    </p>
                                                 </div>
-                                            
-                                  
+                                                <div className="p-2 bg-success-subtle rounded-2 ms-2" style={{
+                                                    backgroundColor: "rgba(40, 167, 69, 0.1)",
+                                                    borderRadius: "8px",
+                                                    padding: "8px"
+                                                }}>
+                                                    <i className="ti ti-gift fs-5 text-success" style={{ fontSize: "20px", color: "green" }}></i>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
 
                                         {/* Card 3 - Mining(ROI) */}
                                         <div className="col-12 col-md-4 col-lg-4 d-flex align-items-stretch">
@@ -1050,21 +1091,22 @@ useEffect(() => {
                                                                 }}>
                                                                     {userData?.TokenStakeBonus?.toLocaleString() || '0'}
                                                                 </h5>
-                                                             </div>
+                                                            </div>
                                                             <div className='mt-2' style={{
                                                                 fontSize: "16px",
                                                                 fontWeight: "600",
                                                                 color: "#6c757d",
                                                                 marginBottom: "2px"
                                                             }}>
+                                                                
                                                                 Level Income
                                                             </div>
-                                                            <h5 style={ {
+                                                            <h5 style={{
                                                                 color: "green",
                                                                 fontWeight: "700",
                                                                 fontSize: "23px",
-                                                                
                                                             }}>
+
                                                                 {userData?.LevelIncome?.toLocaleString() || '0'}
                                                             </h5>
                                                         </div>
@@ -1096,7 +1138,7 @@ useEffect(() => {
                                                     <div className="d-flex justify-content-between align-items-start mb-2">
                                                         <Link to="/dashboard/CompoundingHistory" className="text-decoration-none flex-grow-1">
                                                             <div>
-                                                                <div className="" style={{fontWeight: "600"}}>Social Media Bonus</div>
+                                                                <div className="" style={{ fontWeight: "600" }}>Social Media Bonus</div>
 
                                                                 <div className='mt-3' style={{ display: "flex", alignItems: "center", gap: "8px", }}>
                                                                     <img
@@ -1108,7 +1150,7 @@ useEffect(() => {
                                                                             borderRadius: "50%"
                                                                         }}
                                                                     />
-                                                                    <h5 style={{fontWeight: "800", color: "green"}}>
+                                                                    <h5 style={{ fontWeight: "800", color: "green" }}>
                                                                         {userData?.SocialBonus?.toLocaleString() || '0'}
                                                                     </h5>
                                                                 </div>
@@ -1128,7 +1170,7 @@ useEffect(() => {
                                                 <div className="card-body p-3 d-flex flex-column">
                                                     <div className="d-flex justify-content-between align-items-start mb-2">
                                                         <div className="flex-grow-1">
-                                                            <div style={{fontWeight: "600"}}>Air Drop</div>
+                                                            <div style={{ fontWeight: "600" }}>Air Drop</div>
                                                             <div className='mt-3' style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
                                                                 <img
                                                                     src={apexcoin}
@@ -1139,7 +1181,7 @@ useEffect(() => {
                                                                         borderRadius: "50%"
                                                                     }}
                                                                 />
-                                                                <h5 style={{fontWeight: "800", color: "green"}}>
+                                                                <h5 style={{ fontWeight: "800", color: "green" }}>
                                                                     {userData?.tokenBonusOnUpgrade?.toLocaleString() || '0'}
                                                                 </h5>
                                                             </div>
@@ -1228,13 +1270,16 @@ useEffect(() => {
 
 
 
-
+            <hr className='mb-2 mt-4' style={{ backgroundColor: "black", height: "1px" }} />
+            <div className='text-dark'>
+                <h3 className='mb-3'>All Payout</h3>
+            </div>
 
             {/* payout */}
-            <div className='row mt-4'>
+            <div className='row '>
 
                 {/* PayOut Card */}
-                <div className="col-12 col-lg-4 d-flex align-items-stretch">
+                <div className="col-12 col-lg-6 d-flex align-items-stretch">
                     <div className="card w-100 border-0">
                         <div className="d-flex justify-content-between p-2 mt-2 px-3">
                             <div style={{ fontWeight: "900", fontSize: "20px" }}>Income Payout</div>
@@ -1253,7 +1298,7 @@ useEffect(() => {
                                 <div className="d-flex align-items-center justify-content-between mt-4">
                                     <Link to="/dashboard/PayOutHistory">
                                         <h5 className='amount-report'>
-                                            ${userData?.withdrawal?.toLocaleString() || '0.00'}
+                                            ${userData?.TotalIncome?.toLocaleString() || '0.00'}
                                         </h5>
                                         <p className="mb-2">
                                             Payout Amt
@@ -1269,7 +1314,7 @@ useEffect(() => {
                                 </div>
                                 <div className='d-flex align-items-center gap-2'>
                                     <span style={{ color: "green", fontWeight: "bold" }}>Note :</span>
-                                    <p style={{ margin: 0, color: "#666", fontSize: "13px" }}>Min Withdrawal $20</p>
+                                    <p style={{ margin: 0, color: "#666", fontSize: "13px" }}>Min Withdrawal $10</p>
                                 </div>
                             </div>
                         </div>
@@ -1283,7 +1328,7 @@ useEffect(() => {
 
                 {/* Self Trading Payout */}
 
-                <div className="col-12 col-lg-4 d-flex align-items-stretch">
+                <div className="col-12 col-lg-4 d-flex align-items-stretch d-none">
                     <div className="card w-100 border-0">
                         <div className="d-flex justify-content-between p-2 mt-2 px-3">
                             <div style={{ fontWeight: "900", fontSize: "20px" }}>Self Trading Payout</div>
@@ -1318,7 +1363,7 @@ useEffect(() => {
                                 </div>
                                 <div className='d-flex align-items-center gap-2'>
                                     <span style={{ color: "green", fontWeight: "bold" }}>Note :</span>
-                                    <p style={{ margin: 0, color: "#666", fontSize: "13px" }}>Min Withdrawal $20</p>
+                                    <p style={{ margin: 0, color: "#666", fontSize: "13px" }}>Min Withdrawal $10</p>
                                 </div>
                             </div>
                         </div>
@@ -1327,7 +1372,7 @@ useEffect(() => {
 
 
                 {/* Token Payout */}
-                <div className="col-12 col-lg-4 d-flex align-items-stretch">
+                <div className="col-12 col-lg-6 d-flex align-items-stretch">
                     <div className="card w-100 border-0">
                         <div className="d-flex justify-content-between p-2 mt-2 px-3">
                             <div style={{ fontWeight: "900", fontSize: "20px" }}>Token Payout</div>
@@ -1346,7 +1391,7 @@ useEffect(() => {
                                 <div className="d-flex align-items-center justify-content-between mt-4">
                                     <Link to="/dashboard/PayOutHistory">
                                         <h5 className='amount-report'>
-                                            ${userData?.withdrawal?.toLocaleString() || '0.00'}
+                                            ${userData?.TotalEarnTokenInWallet?.toLocaleString() || '0.00'}
                                         </h5>
                                         <p className="mb-2">
                                             Payout Token
@@ -1492,8 +1537,7 @@ useEffect(() => {
                                             type="number"
                                             className="form-control"
                                             placeholder="0x6cd8fd916C21E9d124e2EF61640a70A70c3E50"
-                                            value={selfPayoutAmount}
-                                            onChange={(e) => setSelfPayoutAmount(e.target.value)}
+                                            // value={selfPayoutAmount}
                                             style={{
                                                 flex: 1,
                                                 padding: '12px 16px',
@@ -1863,8 +1907,6 @@ useEffect(() => {
                         </div>
                     </div>
                 )}
-
-
             </div>
         </div>
     );
