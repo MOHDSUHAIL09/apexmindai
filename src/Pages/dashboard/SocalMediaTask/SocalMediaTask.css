@@ -65,9 +65,10 @@
 .form-card {
   max-width: 100%;
 }
+.social-task-container{
+  padding: 0px !important;
 }
-
-
+}
 
 .header-title {
   margin: 0;

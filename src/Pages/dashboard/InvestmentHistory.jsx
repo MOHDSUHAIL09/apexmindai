@@ -1,4 +1,6 @@
+// InvestmentHistory.jsx - Original style same rakha
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import apiClient from "../../api/apiClient";
 import CustomTable from "../../Componenets/ui/customtable/CustomTable";
 import Pagination from "../../Componenets/ui/pagination/Pagination";
@@ -13,34 +15,34 @@ const InvestmentHistory = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
 
-    const regno = localStorage.getItem("regno");
-    const token = localStorage.getItem("token");
+    // ✅ Sirf regno lo
+    const regno = localStorage.getItem("Regno");
 
     useEffect(() => {
-        const fetchBonus = async () => {
+        const fetchWalletReport = async () => {
+            // ✅ Agar regno nahi hai toh error dikhao
+            if (!regno) {
+                setLoading(false);
+                setError("Please login to view your investment history");
+                return;
+            }
+
             try {
                 setLoading(true);
                 setError(null);
 
                 const res = await apiClient.get(
-                    `/Dashboard/self-trading-history/${regno}`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
+                    `/DepositReport/WalletReport/${regno}`
                 );
-                console.log("selfhistory", res);
+                console.log("Wallet Report Response:", res);
 
-                if (res.data && res.data.data) {
-                    const tradingData = res.data.data.tradingHistory;
-                    const dataArray = Array.isArray(tradingData) ? tradingData : [];
-                    setRecords(dataArray);
+                // ✅ Correct API response handling
+                if (res.data && res.data.result === "true") {
+                    const walletData = res.data.response?.walletData || [];
+                    setRecords(walletData);
                 } else {
                     setRecords([]);
-                    if (res.data && !res.data.success) {
-                        setError(res.data.message || "Failed to fetch data");
-                    }
+                    setError(res.data?.message || "Failed to fetch data");
                 }
             } catch (error) {
                 console.error("API Error:", error.response || error);
@@ -51,19 +53,18 @@ const InvestmentHistory = () => {
             }
         };
 
-        if (regno && token) {
-            fetchBonus();
-        }
-    }, [regno, token]);
+        fetchWalletReport();
+    }, [regno]);
 
     // Filter records based on search term
     const filteredRecords = records.filter((row) => {
         const searchLower = searchTerm.toLowerCase();
         return (
-            (row.Rdate && row.Rdate.toLowerCase().includes(searchLower)) ||
-            (row.paymode && row.paymode.toLowerCase().includes(searchLower)) ||
-            (row.Rkprice && row.Rkprice.toString().toLowerCase().includes(searchLower)) ||
-            (row.Rkid && row.Rkid.toString().toLowerCase().includes(searchLower))
+            (row.dt && row.dt.toLowerCase().includes(searchLower)) ||
+            (row.transType && row.transType.toLowerCase().includes(searchLower)) ||
+            (row.remark && row.remark.toLowerCase().includes(searchLower)) ||
+            (row.credit && row.credit.toString().toLowerCase().includes(searchLower)) ||
+            (row.debit && row.debit.toString().toLowerCase().includes(searchLower))
         );
     });
 
@@ -92,35 +93,69 @@ const InvestmentHistory = () => {
 
     // Format date
     const formatDate = (dateString) => {
-        if (!dateString) return "";
-        try {
-            const date = new Date(dateString);
-            return date.toLocaleDateString();
-        } catch (e) {
-            return dateString;
-        }
+        if (!dateString) return "-";
+        return dateString;
+    };
+
+    // Format amount with $ sign
+    const formatAmount = (amount) => {
+        return `$${amount || 0}`;
+    };
+
+    // Get badge color based on transaction type
+    const getTransTypeBadge = (transType) => {
+        if (!transType) return "secondary";
+        const type = transType.toLowerCase();
+        if (type.includes('trading') || type.includes('profit')) return "success";
+        if (type.includes('withdraw')) return "danger";
+        if (type.includes('deposit')) return "primary";
+        if (type.includes('bonus')) return "warning";
+        return "secondary";
     };
 
     // Columns for the table
     const columns = [
         "Sl.No.",
-        "Investment Date",
+        "Date",
         "Amount",
-        "For Locking",
-        "Invest Mode",
+        "Transaction Type",
+        "Remark"
     ];
+
+    // ✅ Login required error
+    if (error === "Please login to view your investment history") {
+        return (
+            <div className="Table-container downline-main-wrapper report-container p-2 p-md-4 mb-5">
+                <div className="mb-3">
+                    <h2> Investment Statement</h2>
+                </div>
+                <div className="alert alert-warning shadow-sm rounded-3" role="alert">
+                    <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                    {error}
+                </div>
+                <div className="text-center mt-4">
+                    <Link to="/login">
+                        <button className="btn btn-primary px-4 py-2">
+                            🔑 Go to Login
+                        </button>
+                    </Link>
+                </div>
+            </div>
+        );
+    }
 
     // Show error state
     if (error) {
         return (
-            <div className="report-container p-2 p-md-4 mb-5">
+            <div className="Table-container downline-main-wrapper report-container p-2 p-md-4 mb-5">
                 <div className="mb-3">
-                    <h2>Investment Statement</h2>
+                    <h2> Investment Statement</h2>
                 </div>
-                <hr style={{ border: "1px solid #282727" }} />
-                <div className="alert alert-danger" role="alert">
+                <div className="alert alert-danger shadow-sm rounded-3" role="alert">
+                    <i className="bi bi-exclamation-triangle-fill me-2"></i>
                     {error}
                 </div>
+
             </div>
         );
     }
@@ -129,9 +164,8 @@ const InvestmentHistory = () => {
         <div className="Table-container downline-main-wrapper report-container p-2 p-md-4 mb-5">
             {/* Heading */}
             <div className="mb-3">
-                <h2>Investment Statement</h2>
+                <h2> Investment Statement</h2>
             </div>
-            <hr style={{ border: "1px solid #9c9898" }} />
 
             {/* Search and Items per page */}
             <div className="entries-search-bar entries-control mb-3">
@@ -176,24 +210,33 @@ const InvestmentHistory = () => {
             <CustomTable columns={columns} loading={loading}>
                 {currentRecords.length > 0 ? (
                     currentRecords.map((row, index) => (
-                        <tr key={row.Rid || index}>
+                        <tr key={index}>
                             <td className="text-center">
                                 <div className="sr-no-circle">
                                     {startIndex + index + 1}
                                 </div>
                             </td>
-                            <td>{formatDate(row.Rdate)}</td>
+                            <td>{formatDate(row.dt)}</td>
                             <td>
-                                <span className="badge bg-success px-3 py-2 rounded-pill">
-                                    ${row.Rkprice || 0}
+                                {row.debit > 0 ? (
+                                    <span className="badge bg-success px-3 py-2 rounded-pill">
+                                        ${row.debit}
+                                    </span>
+                                ) : (
+                                    <span className="text-muted">-</span>
+                                )}
+                            </td>
+                            <td>
+                                <span className={`badge bg-${getTransTypeBadge(row.transType)} px-3 py-2 rounded-pill`}>
+                                    {row.transType || "N/A"}
                                 </span>
                             </td>
-                            <td>{row.expDate || "Standard"}</td>
                             <td>
-                                <span className={row.paymode?.toLowerCase().includes('bot') ? "badge bg-secondary px-3 py-2 rounded-pill" : "badge bg-success px-3 py-2 rounded-pill"}>
-                                    {row.paymode || "N/A"}
+                                <span style={{ fontSize: '0.9rem' }}>
+                                    {row.remark || "-"}
                                 </span>
-                            </td>        </tr>
+                            </td>
+                        </tr>
                     ))
                 ) : (
                     <tr>

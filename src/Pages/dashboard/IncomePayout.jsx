@@ -3,6 +3,7 @@ import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 // import './investFund/invest.css';
 import { Link } from "react-router-dom";
+import apiClient from "../../api/apiClient";
 
 const WithdrawalRequest = () => {
     const [amount, setAmount] = useState("");
@@ -18,7 +19,7 @@ const WithdrawalRequest = () => {
         
         try {
             // Replace this with your actual balance API
-            const response = await fetch(`http://api.apexmindai.in/api/User/Balance?regno=${regno}`);
+            const response = await apiClient(`/User/Balance?regno=${regno}`);
             const data = await response.json();
             if (data.result === "true") {
                 setUserBalance(data.balance || 0);
@@ -80,14 +81,7 @@ const WithdrawalRequest = () => {
                 payMode: paymentMode
             };
 
-            const response = await fetch('http://api.apexmindai.in/api/IncomePayout/WithdrawRequest', {
-                method: 'POST',
-                headers: {
-                    'accept': '*/*',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestBody)
-            });
+      const response = await apiClient.post('/IncomePayout/WithdrawRequest', requestBody);
 
             const data = await response.json();
 

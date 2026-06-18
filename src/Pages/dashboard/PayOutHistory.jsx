@@ -1,194 +1,257 @@
-  import React, { useState, useEffect } from 'react';
-  import CustomTable from '../../Componenets/ui/customtable/CustomTable';
-  import Pagination from '../../Componenets/ui/pagination/Pagination';
-  import { ToastContainer, toast } from 'react-toastify';
-  import 'react-toastify/dist/ReactToastify.css';
+// WithdrawReport.jsx - Exact copy of InvestmentHistory style
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import apiClient from "../../api/apiClient";
+import CustomTable from "../../Componenets/ui/customtable/CustomTable";
+import Pagination from "../../Componenets/ui/pagination/Pagination";
 
-  const WithdrawReport = () => {
-      const [reportData, setReportData] = useState([]);
-      const [loading, setLoading] = useState(false);
-      const [totalRecords, setTotalRecords] = useState(0);
-      const [currentPage, setCurrentPage] = useState(1);
-      const [pageSize, setPageSize] = useState(10);
+const WithdrawReport = () => {
+    const [records, setRecords] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [error, setError] = useState(null);
 
-      // Table Columns
-      const columns = ['Date', 'PayOut Amount', 'Service charge', 'Recivice Amount', 'Remark', "Status"];
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
 
-      // Fetch Withdraw Report
-      const fetchWithdrawReport = async () => {
-          setLoading(true);
-          const regno = localStorage.getItem('Regno');
+    const regno = localStorage.getItem("Regno");
 
-          if (!regno) {
-              toast.error('Registration number not found');
-              setLoading(false);
-              return;
-          }
+    useEffect(() => {
+        const fetchWithdrawReport = async () => {
+            if (!regno) {
+                setLoading(false);
+                setError("Please login to view your withdrawal history");
+                return;
+            }
 
-          try {
-              const response = await fetch(
-                  `http://api.apexmindai.in/api/IncomePayout/PayoutReport/${regno}`,
-              );  
+            try {
+                setLoading(true);
+                setError(null);
 
-              const data = await response.json();
+                const res = await apiClient.get(
+                    `/IncomePayout/PayoutReport/${regno}`
+                );
+                console.log("Withdraw Report Response:", res);
 
-              if (data.result === "true") {
-                  setReportData(data.response.data || []);
-                  setTotalRecords(data.response.data?.length || 0);
-              } else {
-                  toast.error(data.message || 'Failed to fetch report');
-                  setReportData([]);
-                  setTotalRecords(0);
-              }
-          } catch (err) {
-              console.error('Error fetching report:', err);
-              toast.error(err.message || 'Something went wrong');
-              setReportData([]);
-              setTotalRecords(0);
-          } finally {
-              setLoading(false);
-          }
-      };
+                if (res.data && res.data.result === "true") {
+                    const reportData = res.data.response || [];
+                    setRecords(reportData);
+                } else {
+                    setRecords([]);
+                    setError(res.data?.message || "Failed to fetch data");
+                }
+            } catch (error) {
+                console.error("API Error:", error.response || error);
+                setError(error.response?.data?.message || "An error occurred while fetching data");
+                setRecords([]);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-      useEffect(() => {
-          fetchWithdrawReport();
-      }, []);
+        fetchWithdrawReport();
+    }, [regno]);
 
-      // Format Date
-      const formatDate = (dateString) => {
-          if (!dateString) return '-';
-          const date = new Date(dateString);
-          return date.toLocaleString('en-IN', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
-          });
-      };
+    // Filter records
+    const filteredRecords = records.filter((row) => {
+        const searchLower = searchTerm.toLowerCase();
+        return (
+            (row.entryDate && row.entryDate.toLowerCase().includes(searchLower)) ||
+            (row.remark && row.remark.toLowerCase().includes(searchLower)) ||
+            (row.status && row.status.toLowerCase().includes(searchLower))
+        );
+    });
 
-      // Format Amount
-      const formatAmount = (amount) => {
-          if (!amount && amount !== 0) return '-';
-          return `$${Number(amount).toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2
-          })}`;
-      };
+    const totalItems = filteredRecords.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentRecords = filteredRecords.slice(startIndex, endIndex);
 
-      // Get Transaction Type Badge
-      const getTransactionBadge = (type) => {
-          switch (type?.toLowerCase()) {
-              case 'payoutamount':
-              case 'servicecharget':
-              case 'reciviceamount':
-              case 'Remark':
-                
-          }
-      };
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, itemsPerPage]);
 
-      // Pagination
-      const totalPages = Math.ceil(totalRecords / pageSize);
-      const startIndex = (currentPage - 1) * pageSize;
-      const endIndex = startIndex + pageSize;
-      const currentData = reportData.slice(startIndex, endIndex);
+    const handlePageChange = (page) => setCurrentPage(page);
+    const handleItemsPerPageChange = (e) => {
+        setItemsPerPage(Number(e.target.value));
+        setCurrentPage(1);
+    };
 
-      return (
-          <>
-              <ToastContainer 
-                  position="top-right"
-                  autoClose={3000}
-                  hideProgressBar={false}
-                  newestOnTop={false}
-                  closeOnClick
-                  rtl={false}
-                  pauseOnFocusLoss
-                  draggable
-                  pauseOnHover
-              />
+    const formatDate = (dateString) => {
+        if (!dateString) return "-";
+        return dateString;
+    };
 
-              <div className="container-fluid py-4">
-                  <div className="card shadow-sm">
-                      {/* Header */}
-                      <div className="card-header bg-primary text-white">
-                          <div className="d-flex justify-content-between align-items-center">
-                              <div>
-                                  <h4 className="mb-0">💰 Withdrawal Report</h4>
-                                  <small>View your transaction history</small>
-                              </div>
-                          </div>
-                      </div>
+    const formatAmount = (amount) => {
+        if (!amount && amount !== 0) return "-";
+        return `$${Number(amount).toFixed(2)}`;
+    };
 
-                      <div className="card-body">
-                          {/* Stats */}
-                          <div className="d-flex justify-content-between align-items-center mb-3">
-                              {/* <div>
-                                  <span className="text-muted">Total Transactions: </span>
-                                  <strong className="text-primary">{totalRecords}</strong>
-                              </div> */}
-                              <div>
-                                  <select 
-                                      className="form-select form-select-sm"
-                                      style={{ width: '120px' }}
-                                      value={pageSize}
-                                      onChange={(e) => {
-                                          setPageSize(parseInt(e.target.value));
-                                          setCurrentPage(1);
-                                      }}
-                                  >
-                                      <option value={5}>5 per page</option>
-                                      <option value={10}>10 per page</option>
-                                      <option value={20}>20 per page</option>
-                                      <option value={50}>50 per page</option>
-                                  </select>
-                              </div>
-                          </div>
+    const getStatusBadge = (status) => {
+        if (!status) return "secondary";
+        const type = status.toLowerCase();
+        if (type.includes('success') || type.includes('approved') || type.includes('completed')) return "success";
+        if (type.includes('pending')) return "warning";
+        if (type.includes('rejected') || type.includes('failed') || type.includes('cancel')) return "danger";
+        return "secondary";
+    };
 
-                          {/* Custom Table */}
-                          <CustomTable 
-                              columns={columns} 
-                              loading={loading} 
-                              emptyMessage="No withdrawal transactions found"
-                          >
-                              {currentData.map((item, index) => (
-                                  <tr key={index}>
-                                      <td className="px-4 py-3">
-                                          {formatDate(item.entryDate || item.date || item.createdDate)}
-                                      </td>
-                                      <td className="px-4 py-3 text-success">
-                                          {item.debit > 0 ? formatAmount(item.debit) : '-'}
-                                      </td>
-                                      <td className="px-4 py-3 text-danger">
-                                          {item.handlingcharge > 0 ? formatAmount(item.handlingcharge) : 
-                                          (item.type === 'debit' ? formatAmount(item.amount) : '-')}
-                                      </td>
-                                      <td className="px-4 py-3">
-                                          {getTransactionBadge(item.netPayable || item.netPayable)}
-                                      </td>
-                                      <td className="px-4 py-3">
-                                          {item.remark}
-                                      </td>
-                                      <td className="px-4 py-3">
-                                          {item.status}
-                                      </td>
-                                  </tr>
-                              ))}
-                          </CustomTable>
+    const columns = [
+        "Sl.No.",
+        "Date",
+        "PayOut Amount",
+        "Service charge",
+        "Recivice Amount",
+        "Remark",
+        "Status"
+    ];
 
-                          {/* Pagination */}
-                          {totalRecords > 0 && (
-                              <Pagination
-                                  currentPage={currentPage}
-                                  totalPages={totalPages}
-                                  totalRecords={totalRecords}
-                                  onPageChange={setCurrentPage}
-                              />
-                          )}
-                      </div>
-                  </div>
-              </div>
-          </>
-      );
-  };  
+    // Login required error
+    if (error === "Please login to view your withdrawal history") {
+        return (
+            <div className="Table-container downline-main-wrapper report-container p-2 p-md-4 mb-5">
+                <div className="mb-3">
+                    <h2>Withdrawal Report</h2>
+                </div>
+                <div className="alert alert-warning shadow-sm rounded-3" role="alert">
+                    <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                    {error}
+                </div>
+            </div>
+        );
+    }
 
-  export default WithdrawReport;
+    if (error) {
+        return (
+            <div className="Table-container downline-main-wrapper report-container p-2 p-md-4 mb-5">
+                <div className="mb-3">
+                    <h2>PayOut Report</h2>
+                </div>
+                <div className="alert alert-danger shadow-sm rounded-3" role="alert">
+                    <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                    {error}
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="Table-container downline-main-wrapper report-container p-2 p-md-4 mb-5">
+            {/* Heading */}
+            <div className="mb-3">
+                <h2>Payout Report</h2>
+            </div>
+
+            {/* Search and Items per page */}
+            <div className="entries-search-bar entries-control mb-3">
+                <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div className="d-flex align-items-center gap-2">
+                        <label className="fw-semibold">Show entries:</label>
+                        <select
+                            className="form-select w-auto"
+                            value={itemsPerPage}
+                            onChange={handleItemsPerPageChange}
+                            style={{
+                                borderRadius: "8px",
+                                border: "1px solid rgba(102, 126, 234, 0.2)",
+                            }}
+                        >
+                            <option value={10}>10</option>
+                            <option value={25}>25</option>
+                            <option value={50}>50</option>
+                            <option value={75}>75</option>
+                            <option value={100}>100</option>
+                        </select>
+                    </div>
+
+                    <div className="d-flex align-items-center gap-2">
+                        <input
+                            className="form-control"
+                            placeholder="Search records..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            style={{
+                                minWidth: "250px",
+                                borderRadius: "8px",
+                                border: "1px solid rgba(102, 126, 234, 0.2)",
+                                padding: "8px 12px",
+                            }}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* Table */}
+            <CustomTable columns={columns} loading={loading}>
+                {currentRecords.length > 0 ? (
+                    currentRecords.map((row, index) => (
+                        <tr key={index}>
+                            <td className="text-center">
+                                <div className="sr-no-circle">
+                                    {startIndex + index + 1}
+                                </div>
+                            </td>
+                            <td>{formatDate(row.entryDate)}</td>
+                            <td>
+                                {row.debit > 0 ? (
+                                    <span className="badge bg-success px-3 py-2 rounded-pill">
+                                        {formatAmount(row.debit)}
+                                    </span>
+                                ) : (
+                                    <span className="text-muted">-</span>
+                                )}
+                            </td>
+                            <td>
+                                {row.handlingcharge > 0 ? (
+                                    <span className="badge bg-danger px-3 py-2 rounded-pill">
+                                        {formatAmount(row.handlingcharge)}
+                                    </span>
+                                ) : (
+                                    <span className="text-muted">-</span>
+                                )}
+                            </td>
+                            <td>
+                                {row.netPayable > 0 ? (
+                                    <span className="badge bg-primary px-3 py-2 rounded-pill">
+                                        {formatAmount(row.netPayable)}
+                                    </span>
+                                ) : (
+                                    <span className="text-muted">-</span>
+                                )}
+                            </td>
+                            <td>
+                                <span style={{ fontSize: '0.9rem' }}>
+                                    {row.remark || "-"}
+                                </span>
+                            </td>
+                            <td>
+                                <span className={`badge bg-${getStatusBadge(row.status)} px-3 py-2 rounded-pill`}>
+                                    {row.status || "N/A"}
+                                </span>
+                            </td>
+                        </tr>
+                    ))
+                ) : (
+                    <tr>
+                        <td colSpan={columns.length} className="text-center py-4">
+                            {loading ? "Loading..." : "No records found"}
+                        </td>
+                    </tr>
+                )}
+            </CustomTable>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    totalRecords={totalItems}
+                    onPageChange={handlePageChange}
+                />
+            )}
+        </div>
+    );
+};
+
+export default WithdrawReport;

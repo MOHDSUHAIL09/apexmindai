@@ -44,11 +44,12 @@ export const UserProvider = ({ children }) => {
         return null;
       }
       
-      const response = await apiClient.get(`Dashboard/Dashboard/${Regno}`);     
+      const response = await apiClient.get(`http://api.apexmindai.in/api/Dashboard/Dashboard/${Regno}`);     
       console.log("Dashboard Api:", response.data);
       
       if (response.data?.result === "true" && response.data?.response) {
         const apiData = response.data.response;
+        
         
         const newUserData = {
           fname: apiData.fname,
@@ -66,6 +67,7 @@ export const UserProvider = ({ children }) => {
           InactiveTeam: apiData.InactiveTeam || 0,
           DirectIncome: apiData.DirectIncome || 0,
           LevelIncome: apiData.LevelIncome || 0,
+          miningRoi: apiData.miningRoi || 0,
           Reward: apiData.Reward || 0,
           AIBOTIncome: apiData.AIBOTIncome || 0,
           CompoundingIncome: apiData.CompoundingIncome || 0,
@@ -113,7 +115,15 @@ export const UserProvider = ({ children }) => {
           IBIncome: apiData.IBIncome || 0,
           RoyaltyIncome: apiData.RoyaltyIncome || 0,
           GlobalRoyaltyIncome: apiData.GlobalRoyaltyIncome || 0,
-          TradingPassiveIncome: apiData.TradingPassiveIncome || 0
+          TradingPassiveIncome: apiData.TradingPassiveIncome || 0,
+          CoinRate: apiData.CoinRate || 0,
+          TotalAmountBuyToken: apiData.TotalAmountBuyToken || 0,
+          TotalTokenInWallet: apiData.TotalTokenInWallet || 0,
+          TokenStakeBonus: apiData.TokenStakeBonus,
+          tokenBonusOnUpgrade: apiData.tokenBonusOnUpgrade,
+          
+
+
         };
       
         setUserData(newUserData);

@@ -29,8 +29,7 @@ const Login = () => {
     const payload = {
       loginId: formData.loginId,
       password: formData.password,
-      deviceId: formData.deviceId
-      
+      deviceId: formData.deviceId     
     };
     
     console.log("📤 Login payload:", payload);
@@ -92,7 +91,7 @@ const Login = () => {
             <div className="col-lg-6 d-flex justify-content-lg-center justify-content-start align-items-center">
               <div className="d-flex justify-content-center align-items-center">
                 <div className="text-center m-auto">
-                  <div className="text-white mb-0" style={{fontSize: "40px",fontWeight: "800"}}>APEX &nbsp; MIND &nbsp; Ai</div>
+                  <div className="text-white mb-0" style={{fontSize: "40px",fontWeight: "800"}}>APEX &nbsp; MIND &nbsp; AI</div>
                 </div>
               </div>
             </div>

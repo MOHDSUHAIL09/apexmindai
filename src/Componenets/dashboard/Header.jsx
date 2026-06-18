@@ -95,7 +95,7 @@ const Header = ({ toggleSidebar }) => {
 
               {/* BOT Link */}
               
-             <li className="nav-item">
+             {/* <li className="nav-item">
   <Link
     to="/dashboard/console"
     className="nav-link p-0 d-flex justify-content-center align-items-center"
@@ -120,7 +120,7 @@ const Header = ({ toggleSidebar }) => {
       <FaRobot size={18} />
     </button>
   </Link>
-</li>
+</li> */}
               
 
               {/* Profile Dropdown */}

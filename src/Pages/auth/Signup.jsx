@@ -1,8 +1,9 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { FaCopy, FaCheck, FaUser, FaIdCard,  } from "react-icons/fa";
-import './auth.css'
+import { FaCopy, FaCheck, FaUser, FaIdCard } from "react-icons/fa";
+import './auth.css';
+import apiClient from "../../api/apiClient";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -31,28 +32,20 @@ const Signup = () => {
     if (!sponsorId || !sponsorId.trim()) return;
     
     try {
-      const response = await fetch(`http://api.apexmindai.in/api/Auth/UserDetailsById?loingId=${sponsorId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-        },
-      });
+      const response = await apiClient.get(`/Auth/UserDetailsById?loingId=${sponsorId}`);
+      console.log("🔍 Sponsor Data:", response.data);
       
-      const data = await response.json();
-      console.log("Sponsor Data:", data);
-      
-      if (data?.result === "true" && data.user) {
-        const sponsorName = data.user.fName || data.user.LoginID;
+      if (response.data?.result === "true" && response.data.user) {
+        const sponsorName = response.data.user.fName || response.data.user.LoginID;
         
         setFormData(prev => ({
           ...prev,
           sponsorName: sponsorName,
           referrer: sponsorName,
-          introRegNo: data.user.regNo,
+          introRegNo: response.data.user.regNo,
         }));
         
-        toast.success(`Sponsor: ${sponsorName}`);
+        toast.success(`✅ Sponsor: ${sponsorName}`);
       } else {
         setFormData(prev => ({ 
           ...prev, 
@@ -60,10 +53,10 @@ const Signup = () => {
           referrer: "",
           introRegNo: "" 
         }));
-        toast.error("Invalid Sponsor ID!");
+        toast.error("❌ Invalid Sponsor ID!");
       }
     } catch (err) {
-      console.error("Fetch error:", err);
+      console.error("❌ Fetch error:", err);
       setFormData(prev => ({ 
         ...prev, 
         sponsorName: "Network Error", 
@@ -153,43 +146,33 @@ const Signup = () => {
       mobile: formData.mobile.toString(),
       email: formData.email.trim().toLowerCase(),
       password: formData.password,
-      address: formData.address,
-      referrer: formData.referrer.trim(),
+      address: formData.address || "N/A",
+      referrer: formData.referrer.trim() || formData.sponsorName || "apexmindai",
       referrer_Id: formData.referrer_Id.toString(),
       affiliate_Level: parseInt(formData.affiliate_Level) || 1,
     };
 
-    console.log("📤 Sending payload:", payload);
+    console.log("📤 Sending payload:", JSON.stringify(payload, null, 2));
 
     try {
-      const response = await fetch("http://api.apexmindai.in/api/Auth/Register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-        },
-        body: JSON.stringify(payload)
-      });
+      const response = await apiClient.post("/Auth/Register", payload);
+      console.log("📥 API Response:", response.data);
       
-      const data = await response.json();
-      console.log("📥 API Response:", data);
-      
-      if (data.result === "true" && data.response) {
-        const userResponse = data.response;
+      if (response.data?.result === "true" && response.data?.response) {
+        const userResponse = response.data.response;
         
-        // 🔥 FIXED: Save regno properly to localStorage
-        // The API returns 'Regno' (capital R), so use that
         const regnoValue = userResponse.Regno || userResponse.regno;
         const loginIdValue = userResponse.LoginID || userResponse.loginid;
         
-        console.log("✅ Saving to localStorage - Regno:", regnoValue);
-        console.log("✅ Saving to localStorage - LoginID:", loginIdValue);
+        console.log("✅ Registration Successful!");
+        console.log("✅ Regno:", regnoValue);
+        console.log("✅ LoginID:", loginIdValue);
         
         // Save to localStorage with both formats for compatibility
-        localStorage.setItem("regno", regnoValue);           // lowercase for your Dashboard
-        localStorage.setItem("Regno", regnoValue);           // original format
+        localStorage.setItem("regno", String(regnoValue));
+        localStorage.setItem("Regno", String(regnoValue));
         localStorage.setItem("loginId", loginIdValue);
-        localStorage.setItem("loginid", loginIdValue);       // lowercase version
+        localStorage.setItem("loginid", loginIdValue);
         localStorage.setItem("isLoggedIn", "true");
         
         // Save complete user object
@@ -224,27 +207,38 @@ const Signup = () => {
         });
         
         setShowSuccessModal(true);
-        toast.success("Registration Successful!");
+        toast.success("🎉 Registration Successful!");
         
-        // Optional: Auto-redirect after 3 seconds
         setTimeout(() => {
           navigate("/login");
         }, 3000);
         
       } else {
         let errorMsg = "Registration Failed";
-        if (data.message) {
-          if (Array.isArray(data.message)) {
-            errorMsg = data.message.join(", ");
+        if (response.data?.message) {
+          if (Array.isArray(response.data.message)) {
+            errorMsg = response.data.message.join(", ");
           } else {
-            errorMsg = data.message;
+            errorMsg = response.data.message;
           }
         }
-        toast.error(errorMsg);
+        toast.error("❌ " + errorMsg);
+        console.error("API Error:", response.data);
       }
     } catch (error) {
-      console.error("Signup Error:", error);
-      toast.error("Network Error! Please check your connection.");
+      console.error("❌ Signup Error:", error);
+      
+      // Handle axios error response
+      if (error.response) {
+        const errorMsg = error.response.data?.message || error.response.statusText || "Server Error";
+        toast.error(`❌ ${errorMsg}`);
+        console.error("Error Response:", error.response.data);
+      } else if (error.request) {
+        toast.error("❌ No response from server!");
+        console.error("Error Request:", error.request);
+      } else {
+        toast.error("❌ Network Error! Please check your connection.");
+      }
     } finally {
       setLoading(false);
     }
@@ -282,7 +276,7 @@ const Signup = () => {
                           <input 
                             type="text" 
                             name="introRegNo" 
-                            placeholder="Sponsor ID*" 
+                            placeholder="Sponsor ID* (Enter Login ID or Regno)" 
                             value={formData.referrer_Id} 
                             onChange={handleChange} 
                             required 
@@ -300,7 +294,7 @@ const Signup = () => {
                             placeholder="Sponsor Name" 
                             className="readonly-input" 
                             style={{ 
-                              color: formData.sponsorName === "Invalid Sponsor" ? "#ff0000" : "#008202", 
+                              color: formData.sponsorName === "Invalid Sponsor" || formData.sponsorName === "Network Error" ? "#ff0000" : "#008202", 
                               fontWeight: "600" 
                             }} 
                           />
@@ -360,7 +354,7 @@ const Signup = () => {
                           <input 
                             type="password" 
                             name="password" 
-                            placeholder="Create Password* (min 6 characters)" 
+                            placeholder="Create Password* (min 8 characters)" 
                             value={formData.password} 
                             onChange={handleChange} 
                             required 
@@ -378,7 +372,7 @@ const Signup = () => {
                         </p>
                       </div>
                       
-                      <div className="col-lg-12">
+                      <div className="col-lg-12 mt-4">
                         <button type="submit" className="laboix-btn" disabled={loading}>
                           {loading ? "Creating Account..." : "Signup Now"}
                         </button>

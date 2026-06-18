@@ -1,34 +1,224 @@
-
-.Table-container{
-   background-color:#ffff ;
-   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-   border-radius: 10px;
+/* Amount Report - Already in your code */
+.amount-report {
+    color: green !important;
+    font-weight: 800 !important;
+}
+.amount-report:hover {
+    color: #06316d !important;
 }
 
-.entries-search-bar{
-   background-color: var(--table-header);
-   padding: 10px;
-   border-radius: 8px;
+/* Table Container - Already in your code */
+.Table-container {
+    background-color: #ffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
 }
 
+.entries-search-bar {
+    background-color: var(--table-header);
+    padding: 10px;
+    border-radius: 8px;
+}
 
 .report-card th,
 .report-card td {
     white-space: nowrap;
     vertical-align: middle;
     text-align: center;
-    
 }
 
 .search-wrapper {
     min-width: 250px;
 }
+
 @media (max-width: 600px) {
-   .search-wrapper {
-    min-width: 10px;
-}
+    .search-wrapper {
+        min-width: 10px;
+    }
 }
 
+/* ============================================ */
+/* ---------- CARD02 CUSTOM STYLES ---------- */
+/* ============================================ */
+
+/* Card02 - Main Card Style */
+.card02 {
+    background: #ffffff !important;
+    border-radius: 12px !important;
+    border: 1px solid #e8ecf1 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+    transition: all 0.3s ease !important;
+    min-height: 140px !important;
+    overflow: hidden !important;
+}
+
+.card02:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.10) !important;
+    transform: translateY(-3px) !important;
+}
+
+/* Card02 - Different Color Variants */
+.card02-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #fff !important;
+}
+
+.card02-primary .text-muted {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.card02-primary .amount-report {
+    color: #fff !important;
+}
+
+.card02-success {
+    background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%) !important;
+}
+
+.card02-warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+}
+
+.card02-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+}
+
+/* Card Body */
+.card-body02 {
+    padding: 1.25rem !important;
+    flex: 1 1 auto !important;
+    min-height: 100px !important;
+}
+
+/* Text Styles inside card02 */
+.card-body02 .text-muted {
+    font-size: 12px !important;
+    color: #6c757d !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.3px !important;
+    margin-bottom: 2px !important;
+}
+
+.card-body02 .amount-report {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #1a1a2e !important;
+    margin-top: 2px !important;
+}
+
+/* Override default amount-report color for card02 */
+.card02 .amount-report {
+    color: #1a1a2e !important;
+    font-weight: 700 !important;
+}
+
+.card02 .amount-report:hover {
+    color: #06316d !important;
+}
+
+/* Icon Boxes inside card02 */
+.card02 .bg-primary-subtle {
+    background-color: rgba(102, 126, 234, 0.12) !important;
+    border-radius: 8px !important;
+}
+
+.card02 .bg-success-subtle {
+    background-color: rgba(40, 167, 69, 0.12) !important;
+    border-radius: 8px !important;
+}
+
+.card02 .bg-info-subtle {
+    background-color: rgba(23, 162, 184, 0.12) !important;
+    border-radius: 8px !important;
+}
+
+.card02 .bg-warning-subtle {
+    background-color: rgba(255, 193, 7, 0.12) !important;
+    border-radius: 8px !important;
+}
+
+/* Icon Sizes */
+.card02 .ti {
+    font-size: 20px !important;
+}
+
+/* Icons hover effect */
+.card02 .p-2 {
+    transition: all 0.3s ease !important;
+}
+
+.card02:hover .p-2 {
+    transform: scale(1.05) !important;
+}
+
+/* Right Side Card - Team Details */
+.right-card02 .d-flex {
+    padding: 4px 0 !important;
+}
+
+/* Card02 Hover Shadow */
+.card02-shadow-sm {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+.card02-shadow-lg {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Card02 Border Radius Variants */
+.card02-rounded {
+    border-radius: 16px !important;
+}
+
+.card02-rounded-sm {
+    border-radius: 8px !important;
+}
+
+/* Card02 - Equal Height Fix */
+.card02 .d-flex.flex-column {
+    height: 100% !important;
+}
+
+/* Card02 - Small Screens */
+@media (max-width: 768px) {
+    .card-body02 {
+        padding: 0.75rem !important;
+    }
+    
+    .card-body02 .amount-report {
+        font-size: 16px !important;
+    }
+    
+    .card-body02 .text-muted {
+        font-size: 10px !important;
+    }
+    
+    .card02 {
+        min-height: 110px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .card-body02 {
+        padding: 0.65rem !important;
+    }
+    
+    .card-body02 .amount-report {
+        font-size: 14px !important;
+    }
+    
+    .card-body02 .text-muted {
+        font-size: 9px !important;
+    }
+    
+    .card02 {
+        min-height: 100px !important;
+    }
+    
+    .card02 .ti {
+        font-size: 16px !important;
+    }
+}
 
 
 
@@ -44,6 +234,23 @@
     border-radius: 50%;
     color: #7388e6;
 }
+.mint-box01 {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(199, 203, 242) !important;
+    border-radius: 50%;
+    color: #7388e6; 
+    margin-top: -25px;
+}
+.mint-box01:hover {
+
+   color: green !important;
+
+}
+
 .c-box{
     margin: 10px;
     border-radius: 8px;
@@ -103,7 +310,7 @@
 .modal-content {
     background: white;
     border-radius: 16px;
-    width: 90%;
+    width: 100%;
     max-width: 600px;
     max-height: 95vh;
     overflow-y: auto;
@@ -434,7 +641,7 @@ background: #a2b3dc6b !important;
     font-size: 16px !important;
 }
 .card01{
-    background-color: #f1f1f1;
+    background-color: #fff;
     border-radius: 5px;
 }
 .income-text{
@@ -449,3 +656,22 @@ background: #a2b3dc6b !important;
     font-weight: 800 !important;
 }
 
+
+.bot-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+}
+
+.bot-modal {
+    width: 100%;
+    max-width: 500px;
+    background: #fff;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.15);
+}

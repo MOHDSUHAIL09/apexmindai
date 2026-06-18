@@ -30,7 +30,7 @@ const UserProfile = () => {
 
       setFormData({
         loginId: localStorage.getItem("loginId") || userData?.me || "",
-        fullName: userData?.name || "",
+        fullName: userData?.fname || "",
         emailId: userData?.email || "",
         mobileNumber: userData?.MobileNo || userData?.mobile || "",
         bep20Wallet: savedWallet,

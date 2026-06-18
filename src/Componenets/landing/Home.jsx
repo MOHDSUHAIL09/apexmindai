@@ -156,7 +156,7 @@ const LandingPage = () => {
 
 
       {/* Header */}
-      <header className={`d-flex z-10 py-2 xxl:py-6 border-b border-neutral4/15 fixed top-0 left-0 right-0 w-full transition-all duration-300 ${scrolled ? 'bg-accent2' : ''}`}>
+      <header className={`d-flex z-10 py-3 xxl:py-6 border-b border-neutral4/15 fixed top-0 left-0 right-0 w-full transition-all duration-300 ${scrolled ? 'bg-accent2' : ''}`}>
         <div className="container flex justify-between items-center header-main">
           <a href="#" onClick={(e) => { e.preventDefault(); scrollToSection('home'); }}>
             <img src={logoApex} className="max-sm:w-28" width="130" alt="Site logo icon" />
@@ -170,12 +170,15 @@ const LandingPage = () => {
             <li><a className="lg:text-lg py-2 inline-flex cursor-pointer" onClick={() => scrollToSection('faq')}>Faq</a></li>
           </ul>
 
-<div className="flex gap-3 items-center">
+<div className="flex gap-3">
   {/* Desktop View */}
   <div className="hidden lg:flex gap-3">
-    <Link to="/login" className="btn-primary color-d">
+    <Link to="/login" >
+    <div className="btn-primary color-d">
       Login
+      </div>
     </Link>
+    
     <Link to="/signup" className="btn-primary color-d">
       Register
     </Link>
@@ -255,12 +258,12 @@ const LandingPage = () => {
           
           <div className="container pt-120 pb-120 grid grid-cols-12 gap-6 items-center">
             <div className="col-span-12 lg:col-span-6 relative z-[2] max-lg:flex max-lg:flex-col max-lg:items-center max-lg:text-center">
-              <h2 className="display-4 mb-4">
+              <h2 className="display-4 mb-4 text-white">
                 Powering Your Trades, Maximizing Your Profits! For
                 <span className="text-primary display-4 underline">Apex</span>
                 <span className="display-4 underline" style={{ color: "#ffbb55" }}>Mindai</span>
               </h2>
-              <p className="mb-8 xl:mb-10 max-w-md lg:text-lg">At Apexmindai, we empower traders with cutting-edge tools and insights, ensuring every trade is strategic and every profit is maximized.</p>
+              <p className="mb-8 xl:mb-10 max-w-md lg:text-lg text-white">At Apexmindai, we empower traders with cutting-edge tools and insights, ensuring every trade is strategic and every profit is maximized.</p>
             </div>
             <div className="col-span-12 lg:col-span-5 lg:col-start-8 relative max-lg:flex max-lg:justify-center">
               <img src={heroImg} className="relative z-[3]" alt="" />
@@ -270,19 +273,19 @@ const LandingPage = () => {
             {/* Stats Section */}
             <div className="stats-section col-span-12 gap-6 grid grid-cols-12 xl:divide-x divide-neutral4/60 pt-120 relative z-[2]">
               <div className="col-span-6 md:col-span-3">
-                <h3 className="h3 mb-3">{stats.country}+</h3>
-                <p className="text-neutral1/80 lg:text-lg">Countries Covered</p>
+                <h3 className="h3 mb-3 text-white">{stats.country}+</h3>
+                <p className="text-neutral1/80 lg:text-lg t">Countries Covered</p>
               </div>
               <div className="col-span-6 md:col-span-3 xl:pl-8">
-                <h3 className="h3 mb-3">{stats.investor} Million</h3>
+                <h3 className="h3 mb-3 text-white">{stats.investor} Million</h3>
                 <p className="text-neutral1/80 lg:text-lg">Global Investors</p>
               </div>
               <div className="col-span-6 md:col-span-3 xl:pl-8">
-                <h3 className="h3 mb-3">{stats.coin}+</h3>
+                <h3 className="h3 mb-3 text-white">{stats.coin}+</h3>
                 <p className="text-neutral1/80 lg:text-lg">Coins</p>
               </div>
               <div className="col-span-6 md:col-span-3 xl:pl-8">
-                <h3 className="h3 mb-3">${stats.volume} Million</h3>
+                <h3 className="h3 mb-3 text-white">${stats.volume} Million</h3>
                 <p className="text-neutral1/80 lg:text-lg">24h Trading Volume</p>
               </div>
             </div>
@@ -294,12 +297,12 @@ const LandingPage = () => {
           <div className="container pb-120 pt-120 relative z-[2]">
             <div className="mb-10 xl:mb-[60px] flex flex-wrap justify-between items-center gap-5">
               <div className="max-w-lg">
-                <h2 className="mb-2">Explore <span className="text-primary h2 underline">Apex</span><span style={{ color: "#ffbb55" }}>Mindai</span></h2>
+                <h2 className="mb-2 text-white">Explore <span className="text-primary h2 underline">Apex</span><span style={{ color: "#ffbb55" }}>Mindai</span></h2>
                 <p className="lg:text-lg text-neutral4">Coin Apexmindai is the easiest, safest, and fastest way to buy &amp; sell crypto asset exchange.</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-12 gap-4 lg:gap-6">
+            <div className="grid grid-cols-12 gap-4 lg:gap-6 text-white">
               {exploreItems.map((item, index) => (
                 <div key={index} className="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-4 group">
                   <div className="bg-accent5 text-center group-hover:bg-accent6 duration-300 px-6 lg:px-10 py-5 lg:py-8 rounded-xl border border-accent4 flex flex-col items-center h-full">
@@ -330,7 +333,7 @@ const LandingPage = () => {
               <div className="overflow-x-auto mb-10 xl:mb-[60px]">
                 <table className="w-full whitespace-nowrap">
                   <thead>
-                    <tr className="bg-accent6 text-start">
+                    <tr className="bg-accent6 text-start text-white">
                       <th className="px-6 py-4">Coin</th>
                       <th className="px-6 py-4">Price (USD)</th>
                       <th className="px-6 py-4">Rate Change (%)</th>
@@ -371,7 +374,7 @@ const LandingPage = () => {
         {/* How To Get Started Section */}
         <section className="bg-accent5 relative overflow-x-hidden" id="start">
           <div className="container pt-120 pb-120">
-            <h2 className="mb-10 xl:mb-[60px] text-center">How To Get <span className="h2 text-primary underline">Started</span></h2>
+            <h2 className="mb-10 xl:mb-[60px] text-center text-white">How To Get <span className="h2 text-primary underline">Started</span></h2>
             <div className="grid grid-cols-12 gap-4 xl:gap-6">
               <div className="col-span-12 md:col-span-6 xl:col-span-3 p-4 lg:p-6 rounded-xl bg-primary flex flex-col items-center">
                 <div className="size-[60px] text-primary text-2xl f-center rounded-full bg-neutral1 mb-4 xl:mb-6">
@@ -381,17 +384,17 @@ const LandingPage = () => {
                 <p className="mb-7 xl:mb-10 lg:text-lg text-center">Get the Apexmindai app on your device and start your trading journey with ease.</p>
                 <a href="#" className="btn-white hover:outline-neutral1">Download Now</a>
               </div>
-              <div className="col-span-12 md:col-span-6 xl:col-span-3 p-4 lg:p-6 rounded-xl flex flex-col items-center">
+              <div className="col-span-12 md:col-span-6 xl:col-span-3 p-4 lg:p-6 rounded-xl flex flex-col items-center text-white">
                 <div className="size-[60px] text-2xl f-center rounded-full bg-accent4 mb-4 xl:mb-6"><h5>02</h5></div>
                 <h4 className="mb-4 xl:mb-6">2. Account Setup</h4>
                 <p className="mb-7 xl:mb-10 text-neutral1/80 lg:text-lg text-center">Sign up, confirm your registration, and log in to start predicting market trends on Apexmindai.</p>
               </div>
-              <div className="col-span-12 md:col-span-6 xl:col-span-3 p-4 lg:p-6 rounded-xl flex flex-col items-center">
+              <div className="col-span-12 md:col-span-6 xl:col-span-3 p-4 lg:p-6 rounded-xl flex flex-col items-center text-white">
                 <div className="size-[60px] text-2xl f-center rounded-full bg-accent4 mb-4 xl:mb-6"><h5>03</h5></div>
                 <h4 className="mb-4 xl:mb-6">3. Start Predicting</h4>
                 <p className="mb-7 xl:mb-10 text-neutral1/80 lg:text-lg text-center">After logging in, you can predict coin price movements and place your bets instantly on Apexmindai.</p>
               </div>
-              <div className="col-span-12 md:col-span-6 xl:col-span-3 p-4 lg:p-6 rounded-xl flex flex-col items-center">
+              <div className="col-span-12 md:col-span-6 xl:col-span-3 p-4 lg:p-6 rounded-xl flex flex-col items-center text-white">
                 <div className="size-[60px] text-2xl f-center rounded-full bg-accent4 mb-4 xl:mb-6"><h5>04</h5></div>
                 <h4 className="mb-4 xl:mb-6">4. Auto Trade</h4>
                 <p className="mb-7 xl:mb-10 text-neutral1/80 lg:text-lg text-center">Use the smart trading bot on Apexmindai to automate your predictions and trade hands-free with advanced accuracy.</p>
@@ -407,11 +410,11 @@ const LandingPage = () => {
               <img src={tryImg} alt="Try Bot" />
             </div>
             <div className="col-span-12 lg:col-span-7">
-              <h2 className="mb-4">Try <span className="text-primary h2 underline">Bot</span><span style={{ color: "#ffbb55" }}>Nex</span> Now!</h2>
-              <p className="lg:text-lg mb-8 xl:mb-10">Predict Crypto Price Movements & Place Your Bets Instantly!</p>
+              <h2 className="mb-4 text-white">Try <span className="text-primary h2 underline">Apex</span><span style={{ color: "#ffbb55" }}>Mind</span> Now!</h2>
+              <p className="lg:text-lg mb-8 xl:mb-10 text-white">Predict Crypto Price Movements & Place Your Bets Instantly!</p>
               <div className="rounded-3xl p-4 lg:p-6 xxl:p-8 bg-accent6 border border-accent4 flex gap-4 flex-wrap items-center justify-between">
                 <div className="max-w-sm">
-                  <h3 className="mb-3">Download Now</h3>
+                  <h3 className="mb-3 text-white">Download Now</h3>
                   <p className="lg:text-lg text-neutral4">Join Apexmindai and Start Predicting Today!</p>
                 </div>
                 <div className="flex gap-3">
@@ -429,8 +432,8 @@ const LandingPage = () => {
         {/* App Highlights Section */}
         <section className="bg-accent2 relative overflow-hidden">
           <div className="container pb-120 pt-120 relative z-[2] text-center">
-            <h2 className="mb-10 xl:mb-[60px]">App <span className="text-primary h2 underline">Highlights</span></h2>
-            <div className="grid grid-cols-12 gap-6">
+            <h2 className="mb-10 xl:mb-[60px] text-white">App <span className="text-primary h2 underline">Highlights</span></h2>
+            <div className="grid grid-cols-12 gap-6 text-white">
               {highlights.map((item, index) => (
                 <div key={index} className="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
                   <div className="group bg-accent5 text-center hover:bg-accent6 duration-300 p-5 xl:p-7 rounded-xl border border-accent4 flex flex-col items-center h-full">
@@ -447,7 +450,7 @@ const LandingPage = () => {
         </section>
 
         {/* FAQ Section */}
-        <section className="bg-accent2 relative overflow-hidden" id="faq">
+        <section className="bg-accent2 relative overflow-hidden text-white" id="faq">
           <div className="container">
             <div className="row">
               <div className="col-md-5">
@@ -478,7 +481,7 @@ const LandingPage = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-accent5 relative overflow-hidden footer">
+      <footer className="bg-accent5 relative overflow-hidden footer text-white">
         <div className="new-pro-pad pt-120 relative z-[2] container grid grid-cols-12 xxl:grid-cols-10 gap-6 lg:divide-x divide-accent4">
           <div className="col-span-12 md:col-span-6 xl:col-span-6 xxl:col-span-4">
             <div className="text-center px-4 md:px-6 lg:px-10 xxl:px-16 new-footer">

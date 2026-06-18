@@ -17,7 +17,6 @@ import Fundtransfer from '../Pages/dashboard/Fundtransfer';
 import AccStatement from '../Pages/dashboard/AccStatement';
 import IncomePayout from '../Pages/dashboard/IncomePayout';
 import InvestFund from '../Pages/dashboard/InvestFund/InvestFund';
-import AgreementForm from '../Pages/dashboard/InvestFund/AgreementForm';
 import SocalMediaTask from '../Pages/dashboard/SocalMediaTask/SocalMediaTask';
 import SocalMediaTaskHistory from '../Pages/dashboard/SocalMediaTask/SocalMediaTaskHistory';
 import PayOutHistory from '../Pages/dashboard/PayOutHistory';
@@ -27,6 +26,9 @@ import IncomeReport from '../Pages/dashboard/IncomeReport';
 import BotTreading from '../Pages/dashboard/BotTreading';
 import DepositFund from '../Pages/dashboard/DepositFund';
 import SelfTradingHistory from '../Pages/dashboard/SelfTradingHistory';
+import InvestToken from '../Pages/dashboard/Investtoken/InvestToken';
+import InvestTokenHistory from '../Pages/dashboard/Investtoken/InvestTokenHistory';
+import BotTradingHistory from '../Pages/dashboard/BotTradingHistory';
 
 function DashboardLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -81,13 +83,18 @@ function DashboardLayout() {
             <Route path="IncomeReport" element={<IncomeReport/>} />
             <Route path="SelfTradingHistory" element={<SelfTradingHistory/>} />
             <Route path="AccStatement" element={<AccStatement/>} />
-            <Route path="Deposit-History" element={<DepositHistory/>} />
+            <Route path="DepositHistory" element={<DepositHistory/>} />
             <Route path="InvestmentHistory" element={<InvestmentHistory />} />
             <Route path="downline-team" element={<DownlineTeam />} />
             <Route path="Royalty" element={<Royalty />} />
             <Route path="reward" element={<Reward />} />
             <Route path="tree-view" element={<Treeview />} />
-            <Route path="AgreementForm" element={<AgreementForm />}/>
+
+            <Route path="InvestToken" element={<InvestToken/>} />
+            <Route path="InvestTokenHistory" element={<InvestTokenHistory/>} />
+            <Route path="BotTradingHistory" element={<BotTradingHistory/>} />
+            
+         
           </Routes>
         </div>
       </div>

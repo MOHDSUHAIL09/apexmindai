@@ -1,31 +1,29 @@
-import  { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { RiP2pFill } from "react-icons/ri";
 import { FaHistory } from "react-icons/fa";
-import {  IoClose } from "react-icons/io5";
+import { IoClose } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 import apiClient from "../../api/apiClient";
 import { toast, ToastContainer } from "react-toastify";
 
-
-const DepositToDeposit = () => {
-    const { userData, investNow, refreshData } = useUser();
+const Fundtransfer = () => {
+    const { userData, refreshData } = useUser();
     const navigate = useNavigate();
 
-    // State
+    // ✅ STATES
     const [amount1, setAmount1] = useState(100);
     const [investUserId1, setInvestUserId1] = useState("");
     const [checkingUser1, setCheckingUser1] = useState(false);
     const [validUser1, setValidUser1] = useState(false);
     const [userName1, setUserName1] = useState("");
+    const [receiverLoginId, setReceiverLoginId] = useState(""); // ✅ Login ID store karne ke liye
     const [loading1, setLoading1] = useState(false);
-    const [otpIntervalId] = useState(null);
-
 
     const depositOptions = [100, 300, 500, 1000, 10000, 50000];
     const isLoading = !userData;
 
-    // Format amount - direct $ without currency conversion
+    // ✅ FORMAT FUNCTIONS
     const formatAmount = (amount) => {
         if (!amount && amount !== 0) return `$0.00`;
         return `$${Number(amount).toLocaleString(undefined, {
@@ -41,44 +39,56 @@ const DepositToDeposit = () => {
         return formatAmount(num);
     };
 
+    // ✅ BUTTON DISABLE CONDITION
     const isP2PButtonDisabled = useMemo(() => {
         return !validUser1 || loading1 || amount1 <= 0 || !investUserId1 || investUserId1.trim() === "";
     }, [validUser1, loading1, amount1, investUserId1]);
 
-
- const checkUser1 = async (id) => {
-    if (!id?.trim()) {
-        setValidUser1(false);
-        setUserName1("");
-        return;
-    }
-    
-    setCheckingUser1(true);
-    try {
-        const res = await apiClient.get(`/Auth/UserDetailsById?loingId=${id}`);
-        const data = res.data;
-        
-        // ✅ API returns "result": "true" and "user" object
-        if (data?.result === "true" && data?.user) {
-            const name = data.user.Name || data.user.fName || "";
-            setValidUser1(true);
-            setUserName1(name);
-            toast.success(`User found: ${name}`);
-        } else {
+    // ✅ USER CHECK KARNE KA FUNCTION
+    const checkUser1 = async (id) => {
+        if (!id?.trim()) {
             setValidUser1(false);
             setUserName1("");
-            toast.error("User ID not found");
+            setReceiverLoginId("");
+            return;
         }
-    } catch (err) {
-        console.error("Error checking user:", err);
-        setValidUser1(false);
-        setUserName1("");
-        toast.error("Error checking user");
-    } finally {
-        setCheckingUser1(false);
-    }
-};
-    const handleInvest1 = async () => {
+        
+        setCheckingUser1(true);
+        try {
+            const res = await apiClient.get(`/Auth/UserDetailsById?loingId=${id}`);
+            const data = res.data;
+            
+            if (data?.result === "true" && data?.user) {
+                const user = data.user;
+                const name = user.Name || user.fName || user.username || "";
+                const loginid = user.loginid || user.LoginId || user.id || "";
+                
+                setValidUser1(true);
+                setUserName1(name);
+                setReceiverLoginId(loginid); // ✅ Login ID store karo
+                
+                toast.success(`User found: ${name}`);
+                console.log("✅ User Details:", { name, loginid });
+            } else {
+                setValidUser1(false);
+                setUserName1("");
+                setReceiverLoginId("");
+                toast.error("User ID not found");
+            }
+        } catch (err) {
+            console.error("❌ Error checking user:", err);
+            setValidUser1(false);
+            setUserName1("");
+            setReceiverLoginId("");
+            toast.error("Error checking user");
+        } finally {
+            setCheckingUser1(false);
+        }
+    };
+
+    // ✅ FUND TRANSFER FUNCTION - DIRECT API CALL
+    const handleFundTransfer = async () => {
+        // ✅ VALIDATIONS
         if (!investUserId1 || investUserId1.trim() === "") {
             toast.error("Please enter User ID");
             return;
@@ -91,36 +101,57 @@ const DepositToDeposit = () => {
             toast.error("Please enter a valid User ID");
             return;
         }
-        if (amount1 > userData.Depositfund) {
-            toast.error(`Insufficient Deposit Wallet balance. Available: ${formatBalance(userData.Depositfund)}`);
+
+        // ✅ WALLET BALANCE CHECK
+        const walletBalance = userData?.Depositfund || userData?.WorkingWallet || 0;
+        if (amount1 > walletBalance) {
+            toast.error(`Insufficient Wallet Balance. Available: ${formatBalance(walletBalance)}`);
             return;
         }
+
         setLoading1(true);
         try {
-            const res = await investNow(investUserId1, amount1);
-            if (res.success) {
-                toast.success(res.message || "Transfer successful!");
+            // ✅ FUND TRANSFER API CALL - receiverLoginId use karo
+            const payload = {
+                regno: userData?.regno || userData?.id || 1,
+                reciveId: receiverLoginId || investUserId1, // ✅ Login ID use karo
+                amount: Number(amount1)
+            };
+
+            console.log("📤 Sending Fund Transfer Request:", payload);
+
+            const response = await apiClient.post('/IncomePayout/FundTransfer', payload);
+            
+            console.log("📥 Fund Transfer Response:", response.data);
+
+            // ✅ RESPONSE CHECK
+            if (response.data?.result === "true") {
+                toast.success(response.data?.message || "Transfer successful!");
+                // ✅ FORM RESET
                 setAmount1(100);
                 setInvestUserId1("");
                 setUserName1("");
                 setValidUser1(false);
-                await refreshData();
+                setReceiverLoginId("");
+                await refreshData(); // Refresh user data
             } else {
-                toast.error(res.message || "Transfer failed");
+                toast.error(response.data?.message || "Transfer failed");
             }
         } catch (err) {
-            console.error("Transfer error:", err);
-            toast.error(err.response?.data?.message || err.message || "Error processing transfer");
+            console.error("❌ Transfer error:", err);
+            const errorMsg = err.response?.data?.message || err.message || "Error processing transfer";
+            toast.error(errorMsg);
         } finally {
             setLoading1(false);
         }
     };
 
+    // ✅ COMPONENT UNMOUNT CLEANUP
     useEffect(() => {
         return () => {
-            if (otpIntervalId) clearInterval(otpIntervalId);
+            // Cleanup if any
         };
-    }, [otpIntervalId]);
+    }, []);
 
     return (
         <>
@@ -156,12 +187,12 @@ const DepositToDeposit = () => {
                                         <div className="wallet-info deposit-wallet">
                                             <span className="wallet-label">Deposit Wallet</span>
                                             <span className="wallet-amount text-primary">
-                                                {formatBalance(userData.WorkingWallet)}
+                                                {formatBalance(userData?.Depositfund || userData?.WorkingWallet)}
                                             </span>
                                         </div>
 
                                         <div className="transfer-form">
-
+                                            {/* USER ID INPUT */}
                                             <div className="form-group">
                                                 <div className="form-label">USER ID</div>
                                                 <input
@@ -173,6 +204,7 @@ const DepositToDeposit = () => {
                                                         if (validUser1) {
                                                             setValidUser1(false);
                                                             setUserName1("");
+                                                            setReceiverLoginId("");
                                                         }
                                                     }}
                                                     onBlur={() => {
@@ -181,6 +213,7 @@ const DepositToDeposit = () => {
                                                         } else {
                                                             setValidUser1(false);
                                                             setUserName1("");
+                                                            setReceiverLoginId("");
                                                         }
                                                     }}
                                                     placeholder="Enter User ID"
@@ -192,6 +225,7 @@ const DepositToDeposit = () => {
                                                 )}
                                             </div>
 
+                                            {/* QUICK AMOUNT BUTTONS */}
                                             <div className="form-group">
                                                 <label className="form-label mt-3">QUICK AMOUNT</label>
                                                 <div className="quick-amount-grid">
@@ -200,6 +234,7 @@ const DepositToDeposit = () => {
                                                             key={opt}
                                                             className={`quick-amount-btn ${amount1 === opt ? "active" : ""}`}
                                                             onClick={() => setAmount1(opt)}
+                                                            type="button"
                                                         >
                                                             $ {opt}
                                                         </button>
@@ -207,6 +242,7 @@ const DepositToDeposit = () => {
                                                 </div>
                                             </div>
 
+                                            {/* AMOUNT INPUT */}
                                             <div className="form-group">
                                                 <label className="form-label mt-3">AMOUNT</label>
                                                 <div className="amount-input-wrapper">
@@ -216,24 +252,31 @@ const DepositToDeposit = () => {
                                                         className="amount-input-field"
                                                         value={amount1}
                                                         onChange={(e) => setAmount1(Number(e.target.value))}
+                                                        min="1"
                                                     />
-                                                    <button className="clear-input-btn" onClick={() => setAmount1(0)}>
+                                                    <button 
+                                                        className="clear-input-btn" 
+                                                        onClick={() => setAmount1(0)}
+                                                        type="button"
+                                                    >
                                                         <IoClose />
                                                     </button>
                                                 </div>
                                             </div>
 
-                                           <button
+                                            {/* SUBMIT BUTTON */}
+                                            <button
                                                 className="submit-transfer-btn"
-                                                onClick={handleInvest1}
+                                                onClick={handleFundTransfer}
                                                 disabled={isP2PButtonDisabled}
+                                                type="button"
                                             >
                                                 {loading1 ? (
                                                     <>
                                                         <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                                                         Processing...
                                                     </>
-                                                ) : "Deposit"}
+                                                ) : "Transfer"}
                                             </button>
                                         </div>
                                     </div>
@@ -247,4 +290,4 @@ const DepositToDeposit = () => {
     );
 };
 
-export default DepositToDeposit;
+export default Fundtransfer;

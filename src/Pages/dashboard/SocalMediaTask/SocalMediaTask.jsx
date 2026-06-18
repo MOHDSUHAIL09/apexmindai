@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './SocalMediaTask.css';
-import { Navigate   , useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const SocalMediaTask = () => {
   // State management
@@ -100,15 +100,14 @@ const SocalMediaTask = () => {
       )}
 
       {/* Main Form Card */}
-      <div className="form-card py-3">
+      <div className="form-card py-3 rounded-3">
         {/* Header with History Button */}
-        <div className="d-flex justify-content-between px-2">
-          <div className="form-header ">
+        <div className="d-flex justify-content-between px-3">
+          <div className="form-header">
             <h2 className=" text-dark">Social Media Task</h2>
-            <p className="header-subtitle text-dark">Submit your social media links</p>
           </div>
-          <button className="history-btn" onClick={handleHistoryClick}>
-             History
+          <button className="btn btn-primary" onClick={handleHistoryClick}>
+             History             
           </button>
         </div>
 
@@ -116,7 +115,7 @@ const SocalMediaTask = () => {
         <form onSubmit={handleSubmit} className="form-body01 px-4">
           {/* URL Field */}
           <div className="form-group">
-            <div className="text-dark mt-2">
+            <div className="text-dark mt-4">
               🔗 URL Link
             </div>
             <input
@@ -149,7 +148,7 @@ const SocalMediaTask = () => {
           {/* Submit Button */}
           <button 
             type="submit" 
-            className="submit-btn"
+            className="submit-btn mb-5 mt-4"
             disabled={loading}
           >
             {loading ? (

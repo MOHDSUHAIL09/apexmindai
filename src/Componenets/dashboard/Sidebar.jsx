@@ -11,17 +11,18 @@ import {
   IconUsersGroup, 
   IconBinaryTree2, 
   IconAward, 
-  IconDeviceComputerCamera, 
-  IconGitCompare,
   IconPower
 } from '@tabler/icons-react';
+import { RiHandCoinFill } from "react-icons/ri";
 import { FaWallet } from "react-icons/fa";
 import dashboardlogo from '../../assets/images/logo/dashboardlogo.png'
+import { useUser } from '../../context/UserContext';
 
 const Sidebar = ({ sidebarCollapsed, mobileSidebarOpen, closeMobileSidebar }) => {
   const [openMenus, setOpenMenus] = useState({});
   const location = useLocation();
   const navigate = useNavigate();
+   const { userData, refreshData } = useUser();
 
   const toggleMenu = (menu) => {
     if (!sidebarCollapsed || window.innerWidth <= 992) {
@@ -90,6 +91,17 @@ const Sidebar = ({ sidebarCollapsed, mobileSidebarOpen, closeMobileSidebar }) =>
                 {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Home</span>}
               </Link>
             </li>
+                        <li className="sidebar-item ms-1 ">
+              <Link 
+                className={`sidebar-link ${isActive('/InvestFund') ? 'active' : ''}`} 
+                to="/dashboard/InvestToken" 
+                onClick={handleLinkClick}
+              >
+                <span style={{fontSize: "20px"}}><RiHandCoinFill stroke={2}/></span>
+                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Token Maining</span>}
+              </Link>
+            </li>
+            
 
             <li className="sidebar-item ms-1 ">
               <Link 
@@ -180,6 +192,16 @@ const Sidebar = ({ sidebarCollapsed, mobileSidebarOpen, closeMobileSidebar }) =>
                 {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Deposit History</span>}
               </Link>
             </li> */}
+                                <li className="sidebar-item">
+              <Link 
+                className={`sidebar-link ${isActive('/SelfTradingHistory') ? 'active' : ''}`} 
+                to="/dashboard/BotTradingHistory"
+                onClick={handleLinkClick}
+              >
+                <span><IconHistory stroke={2} /></span>
+                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Bot Trading History</span>}
+              </Link>
+            </li>
                         <li className="sidebar-item">
               <Link 
                 className={`sidebar-link ${isActive('/SelfTradingHistory') ? 'active' : ''}`} 
@@ -188,6 +210,17 @@ const Sidebar = ({ sidebarCollapsed, mobileSidebarOpen, closeMobileSidebar }) =>
               >
                 <span><IconHistory stroke={2} /></span>
                 {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Self Trading History</span>}
+              </Link>
+            </li>
+
+                                    <li className="sidebar-item">
+              <Link 
+                className={`sidebar-link ${isActive('/InvestmentHistory') ? 'active' : ''}`} s
+                to="/dashboard/InvestmentHistory"
+                onClick={handleLinkClick}
+              >
+                <span><IconHistory stroke={2} /></span>
+                {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Investment History</span>}
               </Link>
             </li>
 
@@ -201,8 +234,6 @@ const Sidebar = ({ sidebarCollapsed, mobileSidebarOpen, closeMobileSidebar }) =>
                 {(!sidebarCollapsed || window.innerWidth <= 992) && <span className="hide-menu">Income Report</span>}
               </Link>
             </li>
-
-
              <li className="sidebar-item">
               <Link 
                 className={`sidebar-link ${isActive('/DepositHistory') ? 'active' : ''}`} 
@@ -277,8 +308,8 @@ const Sidebar = ({ sidebarCollapsed, mobileSidebarOpen, closeMobileSidebar }) =>
                 {(!sidebarCollapsed || window.innerWidth <= 992) && (
                   <>
                     <div className="john-title"> 
-                      <h6 className="mb-0 text-dark">Mathew</h6>
-                      <span className=""style={{fontSize: "20px"}}>Designer</span>
+                      <h6 className="mb-0 text-dark amount-report">{userData?.fname}</h6>
+                      <span className=""style={{fontSize: "18px"}}>{userData?.loginid}</span>
                     </div>
                     <div
                       className="border-0 bg-transparent text-primary ms-auto"

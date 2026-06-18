@@ -1,29 +1,88 @@
 // QRModal.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { MdInfo } from "react-icons/md";
+import { useUser } from '../../context/UserContext'; // ✅ Import useUser
 
-const QRModal = ({ isOpen, onClose, referralLink }) => {
-    if (!isOpen) return null;
+const QRModal = ({ isOpen, onClose }) => {
+    const { userData } = useUser();
+    const [referralLink, setReferralLink] = useState('');
+    const [copySuccess, setCopySuccess] = useState('');
 
+    useEffect(() => {
+        if (isOpen && userData) {
+            generateReferralLink();
+        }
+    }, [isOpen, userData]);
 
-    
-    const copyReferralLink = () => {
-        navigator.clipboard.writeText(referralLink);
-        alert("Referral link copied!");
-    };
-
-    const handleNativeShare = () => {
-        if (navigator.share) {
-            navigator.share({
-                title: 'Join',
-                text: `Join using my referral`,
-                url: referralLink,
-            }).catch(() => console.log('Share cancelled'));
-        } else {
-            copyReferralLink();
+    const generateReferralLink = () => {
+        try {
+            // ✅ Get regno from localStorage
+            const loginid =  userData?.loginid ;
+            
+            // ✅ Base URL
+            const baseUrl = 'http://apexmindai.in';
+            
+            
+            // ✅ Generate referral link with regno
+            const link = `${baseUrl}/signup?ref=${loginid}`;
+            
+            console.log("🔗 Generated Referral Link:", link);
+            console.log("📋 Referral Code:");
+            
+            setReferralLink(link);
+        } catch (error) {
+            console.error("❌ Error generating referral link:", error);
+            // Fallback link
+            setReferralLink('http://apexmindai.in/signup');
         }
     };
+
+    const copyReferralLink = async () => {
+        try {
+            await navigator.clipboard.writeText(referralLink);
+            setCopySuccess('✅ Copied!');
+            console.log("📋 Referral link copied:", referralLink);
+            setTimeout(() => setCopySuccess(''), 2000);
+        } catch (error) {
+            console.error("❌ Copy failed:", error);
+            // Fallback method
+            const textArea = document.createElement('textarea');
+            textArea.value = referralLink;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            setCopySuccess('✅ Copied!');
+            setTimeout(() => setCopySuccess(''), 2000);
+        }
+    };
+
+    const handleNativeShare = async () => {
+        const shareData = {
+            title: 'Join ApexMind AI',
+            text: `Join ApexMind AI using my referral link and start earning! 🚀`,
+            url: referralLink,
+        };
+        
+        try {
+            if (navigator.share) {
+                await navigator.share(shareData);
+                console.log("📤 Shared successfully");
+            } else {
+                await copyReferralLink();
+                alert('📋 Referral link copied to clipboard!');
+            }
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                console.error("❌ Share failed:", error);
+                await copyReferralLink();
+                alert('📋 Referral link copied to clipboard!');
+            }
+        }
+    };
+
+    if (!isOpen) return null;
 
     return (
         <div
@@ -44,30 +103,30 @@ const QRModal = ({ isOpen, onClose, referralLink }) => {
         >
             <style>
                 {`
-          @keyframes slideDown {
-            from {
-              opacity: 0;
-              transform: translateY(-100px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-          
-          @keyframes fadeIn {
-            from {
-              opacity: 0;
-            }
-            to {
-              opacity: 1;
-            }
-          }
-          
-          .modal-slide-down {
-            animation: slideDown 0.4s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
-          }
-        `}
+                    @keyframes slideDown {
+                        from {
+                            opacity: 0;
+                            transform: translateY(-100px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateY(0);
+                        }
+                    }
+                    
+                    @keyframes fadeIn {
+                        from {
+                            opacity: 0;
+                        }
+                        to {
+                            opacity: 1;
+                        }
+                    }
+                    
+                    .modal-slide-down {
+                        animation: slideDown 0.4s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+                    }
+                `}
             </style>
 
             <div
@@ -131,8 +190,7 @@ const QRModal = ({ isOpen, onClose, referralLink }) => {
                             marginBottom: "12px",
                         }}
                     >
-                      <MdInfo size={22} color="#04832f" />
-
+                        <MdInfo size={22} color="#04832f" />
                     </div>
 
                     <h3 style={{ marginBottom: "4px", color: "#2A3547", fontSize: "18px", fontWeight: "600" }}>
@@ -153,22 +211,33 @@ const QRModal = ({ isOpen, onClose, referralLink }) => {
                             borderRadius: "12px",
                         }}
                     >
-                        <QRCodeSVG
-                            value={referralLink}
-                            size={160}
-                            bgColor={"#ffffff"}
-                            fgColor={"#04832f"}
-                            level={"H"}
-                            includeMargin={true}
-                        />
+                        {referralLink ? (
+                            <QRCodeSVG
+                                value={referralLink}
+                                size={160}
+                                bgColor={"#ffffff"}
+                                fgColor={"#04832f"}
+                                level={"H"}
+                                includeMargin={true}
+                            />
+                        ) : (
+                            <div style={{ 
+                                width: "160px", 
+                                height: "160px", 
+                                display: "flex", 
+                                alignItems: "center", 
+                                justifyContent: "center",
+                                backgroundColor: "#f0f0f0"
+                            }}>
+                                <p style={{ color: "#999", fontSize: "12px" }}>Loading...</p>
+                            </div>
+                        )}
                     </div>
-
-                    {/* Referral Link */}
                     <div
                         style={{
                             display: "flex",
                             gap: "8px",
-                            marginBottom: "20px",
+                            marginBottom: "16px",
                         }}
                     >
                         <input
@@ -177,17 +246,30 @@ const QRModal = ({ isOpen, onClose, referralLink }) => {
                             readOnly
                             style={{
                                 flex: 1,
-                                padding: "8px",
+                                padding: "8px 12px",
                                 border: "1px solid #e0e0e0",
                                 borderRadius: "6px",
                                 fontSize: "11px",
                                 backgroundColor: "#f8f9fa",
                                 color: "#333",
+                                wordBreak: "break-all"
                             }}
                         />
                     </div>
 
-                    {/* Share and Copy Link Buttons - Flex */}
+                    {/* Copy Success Message */}
+                    {copySuccess && (
+                        <div style={{ 
+                            marginBottom: "10px",
+                            color: "#28a745",
+                            fontSize: "13px",
+                            fontWeight: "600"
+                        }}>
+                            {copySuccess}
+                        </div>
+                    )}
+
+                    {/* Share and Copy Link Buttons */}
                     <div
                         style={{
                             display: "flex",
@@ -212,7 +294,7 @@ const QRModal = ({ isOpen, onClose, referralLink }) => {
                             onMouseEnter={(e) => e.target.style.backgroundColor = "#036b26"}
                             onMouseLeave={(e) => e.target.style.backgroundColor = "#04832f"}
                         >
-                            Share
+                             Share
                         </button>
 
                         <button
@@ -232,7 +314,7 @@ const QRModal = ({ isOpen, onClose, referralLink }) => {
                             onMouseEnter={(e) => e.target.style.backgroundColor = "#e5e7eb"}
                             onMouseLeave={(e) => e.target.style.backgroundColor = "#f3f4f6"}
                         >
-                            Copy Link
+                             Copy Link
                         </button>
                     </div>
 
